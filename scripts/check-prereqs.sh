@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-echo "=== PoggioAI/MSc Prerequisite Check ==="
+echo "=== pAI/MSc-openclaw Prerequisite Check ==="
 echo ""
 
 ERRORS=0
@@ -92,6 +92,6 @@ if [ $ERRORS -gt 0 ]; then
   echo "Fix the errors above before using the plugin."
   exit 1
 else
-  echo "All prerequisites met. Ready to use /research."
+  echo "All prerequisites met. Ready to use /pai-msc."
   exit 0
 fi

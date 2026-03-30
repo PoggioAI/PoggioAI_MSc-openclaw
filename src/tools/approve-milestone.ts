@@ -1,5 +1,5 @@
 /**
- * consortium.approveMilestone — respond to a human-in-the-loop gate.
+ * pai-msc.approveMilestone — respond to a human-in-the-loop gate.
  *
  * When the pipeline pauses at a milestone (e.g., after research plan),
  * this tool approves, modifies, or aborts the milestone.
@@ -9,7 +9,7 @@ import { SteeringClient } from '../bridge/steering-client.js';
 
 export function registerApproveMilestoneTool(api: any): void {
   api.registerTool({
-    name: 'consortium.approveMilestone',
+    name: 'pai-msc.approveMilestone',
     description:
       'Respond to a pipeline milestone gate. Use "approve" to continue, ' +
       '"modify" with feedback to adjust, or "abort" to stop the pipeline.',

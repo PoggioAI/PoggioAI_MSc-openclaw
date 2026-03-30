@@ -2,11 +2,14 @@ import { PipelineOptions } from '../types/pipeline.js';
 
 /**
  * Quality presets — predefined configurations that maximize paper quality
- * with zero user tuning. These are the result of extensive backtesting.
+ * with zero user tuning. These are the result of extensive backtesting
+ * against the Claude skill orchestrator (SKILL.md).
  *
- * QUALITY_MAX: Best possible paper. Uses Opus, counsel, math agents,
- * strict review gates, 3-round persona debate, 12-pass writeup.
- * Cost: ~$50-200 | Time: 2-5 hours
+ * QUALITY_MAX: Best possible paper. Everything turned to 11.
+ * Uses Opus, counsel, math agents, tree search, strict review gates,
+ * 5-round persona debate, 12-pass writeup, 2 ideation cycles.
+ * Matches the Claude skill's multi-pass execution protocol exactly.
+ * Cost: ~$100-300 | Time: 3-8 hours
  *
  * QUALITY_FAST: Quick draft. Uses Sonnet, no counsel, no math,
  * relaxed gates, markdown output.
@@ -18,26 +21,32 @@ type PresetDefaults = Omit<PipelineOptions, 'task' | 'styleGuidePath' | 'resumeP
 export const QUALITY_MAX: PresetDefaults = {
   preset: 'max-quality',
   model: 'claude-opus-4-6',
-  budgetUsd: 150,
+  budgetUsd: 300,
   outputFormat: 'latex',
   mode: 'local',
 
-  // Quality features: all on
+  // Quality features: ALL ON — no exceptions
   enableMathAgents: true,
   enableCounsel: true,
-  enableTreeSearch: false, // Expensive; enable explicitly if needed
+  enableTreeSearch: true,
   dryRun: false,
 
-  // Review gates: strict
-  minReviewScore: 6,
+  // Review gates: maximum strictness
+  minReviewScore: 7,
   requirePdf: true,
   enforcePaperArtifacts: true,
   enforceEditorialArtifacts: true,
 
-  // Iterations: generous
-  followupMaxIterations: 3,
-  personaDebateRounds: 3,
-  counselMaxDebateRounds: 3,
+  // Iterations: match SKILL.md multi-pass protocol
+  // SKILL.md: 3-5 persona debate rounds, 12 writeup passes, 2 ideation cycles
+  followupMaxIterations: 5,
+  personaDebateRounds: 5,
+  counselMaxDebateRounds: 5,
+  writeupPasses: 12,
+  minPassesPerPhase: 2,
+  maxIdeationCycles: 2,
+  preWriteupDebateRounds: 2,
+  postReviewDebateRounds: 2,
 };
 
 export const QUALITY_FAST: PresetDefaults = {
@@ -63,6 +72,11 @@ export const QUALITY_FAST: PresetDefaults = {
   followupMaxIterations: 2,
   personaDebateRounds: 2,
   counselMaxDebateRounds: 2,
+  writeupPasses: 3,
+  minPassesPerPhase: 1,
+  maxIdeationCycles: 1,
+  preWriteupDebateRounds: 1,
+  postReviewDebateRounds: 1,
 };
 
 /**

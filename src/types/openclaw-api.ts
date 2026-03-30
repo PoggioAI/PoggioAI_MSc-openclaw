@@ -131,7 +131,7 @@ export function assertApi(api: any): asserts api is OpenClawApi {
 
   if (missing.length > 0) {
     throw new Error(
-      `PoggioAI/MSc plugin: OpenClaw API is missing required methods: ${missing.join(', ')}. ` +
+      `pAI/MSc-openclaw plugin: OpenClaw API is missing required methods: ${missing.join(', ')}. ` +
         'This plugin requires OpenClaw >= 2026.3.0.',
     );
   }

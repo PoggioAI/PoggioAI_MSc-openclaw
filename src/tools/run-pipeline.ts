@@ -1,5 +1,5 @@
 /**
- * consortium.runPipeline — agent-callable tool for programmatic pipeline runs.
+ * pai-msc.runPipeline — agent-callable tool for programmatic pipeline runs.
  *
  * This tool allows the OpenClaw agent to start a research pipeline
  * on behalf of the user, e.g., when the user says "research X for me".
@@ -18,9 +18,9 @@ import { spawnPipeline } from '../services/process-manager.js';
 
 export function registerRunPipelineTool(api: any): void {
   api.registerTool({
-    name: 'consortium.runPipeline',
+    name: 'pai-msc.runPipeline',
     description:
-      'Start the PoggioAI/MSc research pipeline with a hypothesis. ' +
+      'Start the pAI/MSc-openclaw research pipeline with a hypothesis. ' +
       'Returns a run ID for tracking. The pipeline runs autonomously ' +
       'and produces a conference-grade manuscript. All inputs are saved ' +
       'to initial_context/ in the run workspace.',
@@ -148,7 +148,7 @@ export function registerRunPipelineTool(api: any): void {
         budget: options.budgetUsd,
         workspaceDir: workspace.runDir,
         attachedFiles: options.uploadedFilePaths?.length ?? 0,
-        message: `Research pipeline started. Use consortium.getResults with runId "${run.id}" to check status.`,
+        message: `Research pipeline started. Use pai-msc.getResults with runId "${run.id}" to check status.`,
       };
     },
   });

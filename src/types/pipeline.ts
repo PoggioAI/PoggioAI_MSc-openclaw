@@ -7,7 +7,7 @@ import { RunWorkspace } from '../services/workspace-manager.js';
 export type QualityPreset = 'max-quality' | 'fast';
 
 /**
- * Options parsed from /research command flags.
+ * Options parsed from /pai-msc command flags.
  */
 export interface PipelineOptions {
   /** Research hypothesis / task description. */
@@ -48,6 +48,16 @@ export interface PipelineOptions {
   enforcePaperArtifacts: boolean;
   /** Enforce editorial artifact checks. */
   enforceEditorialArtifacts: boolean;
+  /** Number of writeup passes (multi-pass execution for quality). */
+  writeupPasses: number;
+  /** Minimum passes per phase before allowing early exit. */
+  minPassesPerPhase: number;
+  /** Maximum ideation cycles before forcing forward. */
+  maxIdeationCycles: number;
+  /** Pre-writeup council debate rounds. */
+  preWriteupDebateRounds: number;
+  /** Post-review persona debate rounds. */
+  postReviewDebateRounds: number;
   /** Skip the file upload prompt before pipeline launch. */
   skipUploadPrompt?: boolean;
   /** Local file paths to attach (--attach flag, repeatable). */
@@ -145,7 +155,7 @@ export interface RunSummary {
 }
 
 /**
- * Record of a past run for /research-list.
+ * Record of a past run for /pai-msc-list.
  */
 export interface RunRecord {
   id: string;

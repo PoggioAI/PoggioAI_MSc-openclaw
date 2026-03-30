@@ -1,5 +1,5 @@
 /**
- * /research-list — list past and active research runs.
+ * /pai-msc-list — list past and active research runs.
  */
 import { activeRuns, runHistory } from '../index.js';
 
@@ -13,14 +13,14 @@ function formatDuration(seconds: number): string {
 
 export function registerResearchListCommand(api: any): void {
   api.registerCommand({
-    name: 'research-list',
+    name: 'pai-msc-list',
     description: 'List all research runs in this session.',
-    usage: '/research-list',
+    usage: '/pai-msc-list',
 
     handler() {
       if (runHistory.length === 0) {
         api.sendMessage(
-          'No research runs yet. Start one with `/research "your hypothesis"`.',
+          'No research runs yet. Start one with `/pai-msc "your hypothesis"`.',
         );
         return;
       }

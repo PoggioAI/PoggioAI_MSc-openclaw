@@ -1,6 +1,6 @@
 # Custom Author Style Guide Example
 
-Override the default style guide by passing `--style-guide /path/to/this/file.md` to `/research`.
+Override the default style guide by passing `--style-guide /path/to/this/file.md` to `/pai-msc`.
 
 ## Your Writing Preferences
 
@@ -30,7 +30,7 @@ Add your specific writing rules here. The writeup agent reads this file before w
 ## How to Use
 
 ```bash
-/research --style-guide /path/to/my-style-guide.md "my hypothesis"
+/pai-msc --style-guide /path/to/my-style-guide.md "my hypothesis"
 ```
 
 The style guide is copied into the workspace as `author_style_guide.md` and read by the writeup agent before any writing begins.

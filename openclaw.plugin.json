@@ -1,7 +1,7 @@
 {
-  "name": "poggioai-msc",
+  "name": "pai-msc-openclaw",
   "version": "0.1.0",
-  "displayName": "PoggioAI/MSc Research Pipeline",
+  "displayName": "pAI/MSc-openclaw",
   "description": "Autonomous multi-agent research pipeline: hypothesis to conference-grade manuscript in one command. Runs persona debate, adversarial lit review, parallel theory+experiment tracks, 12-pass writeup with AI-voice detection, and editorial quality gates.",
   "author": "PoggioAI",
   "license": "MIT",

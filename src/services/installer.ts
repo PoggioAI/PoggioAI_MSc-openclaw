@@ -1,5 +1,5 @@
 /**
- * Auto-Installer for the PoggioAI/MSc consortium Python backend.
+ * Auto-Installer for the pAI/MSc-openclaw consortium Python backend.
  *
  * On first use, clones the repo, creates a conda environment,
  * installs dependencies, patches prompts with backtested versions,
@@ -140,7 +140,7 @@ export async function install(
 
   // Step 1: Clone
   if (!existsSync(path.join(consortiumDir, '.git'))) {
-    onStatus('Cloning PoggioAI/MSc repository...');
+    onStatus('Cloning pAI/MSc-openclaw repository...');
     mkdirSync(parentDir, { recursive: true });
     run(`git clone --depth 1 ${REPO_URL} "${consortiumDir}"`, {
       label: 'git clone',

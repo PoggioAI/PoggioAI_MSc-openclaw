@@ -1,16 +1,16 @@
 /**
- * PoggioAI/MSc OpenClaw Plugin — Entry Point
+ * pAI/MSc-openclaw Plugin — Entry Point
  *
  * Registers commands, tools, services, and hooks with the OpenClaw gateway.
- * This plugin wraps the PoggioAI/MSc consortium research pipeline,
- * providing zero-config access via /research "hypothesis".
+ * This plugin wraps the pAI/MSc-openclaw consortium research pipeline,
+ * providing zero-config access via /pai-msc "hypothesis".
  */
 import { definePluginEntry } from 'openclaw/plugin-sdk/core';
 import type { OpenClawPluginApi } from 'openclaw/plugin-sdk/core';
 import { registerResearchCommand } from './commands/research.js';
-import { registerResearchStatusCommand } from './commands/research-status.js';
-import { registerResearchStopCommand } from './commands/research-stop.js';
-import { registerResearchListCommand } from './commands/research-list.js';
+import { registerResearchStatusCommand } from './commands/pai-msc-status.js';
+import { registerResearchStopCommand } from './commands/pai-msc-stop.js';
+import { registerResearchListCommand } from './commands/pai-msc-list.js';
 import { registerRunPipelineTool } from './tools/run-pipeline.js';
 import { registerSteerPipelineTool } from './tools/steer-pipeline.js';
 import { registerGetResultsTool } from './tools/get-results.js';
@@ -46,8 +46,8 @@ export function getConsortiumDir(config: PluginConfig): string {
 }
 
 export default definePluginEntry({
-  id: 'poggioai-msc',
-  name: 'PoggioAI/MSc Research Pipeline',
+  id: 'pai-msc-openclaw',
+  name: 'pAI/MSc-openclaw',
   description:
     'Autonomous multi-agent research pipeline: hypothesis to conference-grade manuscript in one command.',
   register(api: OpenClawPluginApi) {
@@ -80,6 +80,6 @@ export default definePluginEntry({
       }
     });
 
-    (api as any).log?.('info', 'PoggioAI/MSc plugin loaded. Use /research "hypothesis" to start.');
+    (api as any).log?.('info', 'pAI/MSc-openclaw plugin loaded. Use /pai-msc "hypothesis" to start.');
   },
 });

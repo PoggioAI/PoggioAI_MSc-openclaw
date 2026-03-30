@@ -1,15 +1,15 @@
 /**
- * /research command — the primary user entry point.
+ * /pai-msc command — the primary user entry point.
  *
  * Usage:
- *   /research "Investigate whether batch normalization implicitly regularizes..."
- *   /research --preset fast "quick hypothesis"
- *   /research --model claude-sonnet-4-6 --budget 25 "hypothesis"
- *   /research --resume /path/to/workspace "hypothesis"
- *   /research --style-guide /path/to/guide.md "hypothesis"
- *   /research --attach /path/to/paper.pdf "hypothesis"
- *   /research --no-upload-prompt "hypothesis"
- *   /research --dry-run "hypothesis"
+ *   /pai-msc "Investigate whether batch normalization implicitly regularizes..."
+ *   /pai-msc --preset fast "quick hypothesis"
+ *   /pai-msc --model claude-sonnet-4-6 --budget 25 "hypothesis"
+ *   /pai-msc --resume /path/to/workspace "hypothesis"
+ *   /pai-msc --style-guide /path/to/guide.md "hypothesis"
+ *   /pai-msc --attach /path/to/paper.pdf "hypothesis"
+ *   /pai-msc --no-upload-prompt "hypothesis"
+ *   /pai-msc --dry-run "hypothesis"
  *
  * Flow (workspace-first architecture):
  *   1. Parse arguments
@@ -119,18 +119,18 @@ function parseArgs(argsStr: string): { task: string; overrides: Partial<Pipeline
 }
 
 /**
- * Register the /research command with OpenClaw.
+ * Register the /pai-msc command with OpenClaw.
  */
 export function registerResearchCommand(api: any): void {
   const typedApi = api as OpenClawApi;
 
   api.registerCommand({
-    name: 'research',
+    name: 'pai-msc',
     description:
-      'Run the PoggioAI/MSc research pipeline. ' +
+      'Run the pAI/MSc-openclaw research pipeline. ' +
       'Transforms a hypothesis into a conference-grade manuscript.',
     usage:
-      '/research "your hypothesis" [--preset max-quality|fast] [--model MODEL] ' +
+      '/pai-msc "your hypothesis" [--preset max-quality|fast] [--model MODEL] ' +
       '[--budget USD] [--attach FILE] [--no-upload-prompt] [--dry-run]',
 
     async handler(args: string) {
@@ -138,12 +138,33 @@ export function registerResearchCommand(api: any): void {
       const consortiumDir = getConsortiumDir(config);
       const pluginDir = __dirname.replace(/\/src\/commands$/, '').replace(/\/dist\/commands$/, '');
 
+      // ── Welcome Banner ─────────────────────────────────────────────
+      typedApi.sendMessage(
+        '```\n' +
+        '================================================================\n' +
+        '  pAI/MSc-openclaw — Autonomous Research Pipeline\n' +
+        '================================================================\n' +
+        '\n' +
+        '  Thanks from the PoggioAI Team for using this tool!\n' +
+        '\n' +
+        '  Contact us:\n' +
+        '    Discord: https://discord.gg/Pz7spPPY\n' +
+        '    Email:   pierb@mit.edu\n' +
+        '\n' +
+        '  Please acknowledge PoggioAI in your papers and cite our\n' +
+        '  technical report if you use this tool:\n' +
+        '    https://poggioai.github.io/papers/poggioai-msc-v0.pdf\n' +
+        '\n' +
+        '================================================================\n' +
+        '```',
+      );
+
       // ── Step 1: Parse arguments ────────────────────────────────────
       const { task, overrides } = parseArgs(args);
 
       if (!task && !overrides.resumePath) {
         typedApi.sendMessage(
-          '**Usage:** `/research "your hypothesis"`\n\n' +
+          '**Usage:** `/pai-msc "your hypothesis"`\n\n' +
             'Options:\n' +
             '- `--preset max-quality|fast` — quality preset (default: max-quality)\n' +
             '- `--model MODEL` — LLM model override\n' +
@@ -158,7 +179,7 @@ export function registerResearchCommand(api: any): void {
             '- `--resume PATH` — resume from prior workspace\n' +
             '- `--dry-run` — validate without API calls\n\n' +
             'Example:\n' +
-            '`/research "Investigate whether batch normalization implicitly regularizes spectral norm"`',
+            '`/pai-msc "Investigate whether batch normalization implicitly regularizes spectral norm"`',
         );
         return;
       }
@@ -188,7 +209,7 @@ export function registerResearchCommand(api: any): void {
       // ── Step 4: Auto-install if needed ─────────────────────────────
       if (!isInstalled(consortiumDir)) {
         typedApi.sendMessage(
-          '**First-time setup** — installing PoggioAI/MSc research pipeline (~5 minutes)...',
+          '**First-time setup** — installing pAI/MSc-openclaw research pipeline (~5 minutes)...',
         );
         try {
           await install(consortiumDir, config, pluginDir, (msg) => {
@@ -296,6 +317,7 @@ export function registerResearchCommand(api: any): void {
           options.enableCounsel ? 'counsel' : null,
           options.enableTreeSearch ? 'tree-search' : null,
         ].filter(Boolean).join(', ') || 'standard'}`,
+        `**Multi-pass:** ${options.writeupPasses} writeup passes | ${options.personaDebateRounds} persona rounds | ${options.minPassesPerPhase} min passes/phase`,
         uploadedFiles.length > 0
           ? `**Attached:** ${uploadedFiles.length} reference file(s)`
           : '',
@@ -303,7 +325,7 @@ export function registerResearchCommand(api: any): void {
         `**Workspace:** \`${workspace.runDir}\``,
         '',
         'Progress updates will appear as the pipeline runs.',
-        'Use `/research-status` to check progress or `/research-stop` to cancel.',
+        'Use `/pai-msc-status` to check progress or `/pai-msc-stop` to cancel.',
       ]
         .filter(Boolean)
         .join('\n');

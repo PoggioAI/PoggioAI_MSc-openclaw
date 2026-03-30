@@ -1,12 +1,12 @@
 /**
- * consortium.steerPipeline — inject instructions into a running pipeline.
+ * pai-msc.steerPipeline — inject instructions into a running pipeline.
  */
 import { activeRuns } from '../index.js';
 import { SteeringClient } from '../bridge/steering-client.js';
 
 export function registerSteerPipelineTool(api: any): void {
   api.registerTool({
-    name: 'consortium.steerPipeline',
+    name: 'pai-msc.steerPipeline',
     description:
       'Inject a steering instruction into a running research pipeline. ' +
       'Can be used to redirect research focus, provide additional context, ' +

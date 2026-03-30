@@ -1,17 +1,35 @@
-# PoggioAI/MSc OpenClaw Plugin
+# pAI/MSc-openclaw
 
-Native OpenClaw plugin for the [PoggioAI/MSc](https://github.com/PoggioAI/PoggioAI_MSc) autonomous research pipeline. Transforms a research hypothesis into a conference-grade manuscript with a single command — zero config, zero human steers required.
+Native OpenClaw plugin for the [pAI/MSc](https://github.com/PoggioAI/PoggioAI_MSc) autonomous research pipeline. Transforms a research hypothesis into a conference-grade manuscript with a single command — zero config, zero human steers required.
+
+```
+================================================================
+  pAI/MSc-openclaw — Autonomous Research Pipeline
+================================================================
+
+  Thanks from the PoggioAI Team for using this tool!
+
+  Contact us:
+    Discord: https://discord.gg/Pz7spPPY
+    Email:   pierb@mit.edu
+
+  Please acknowledge PoggioAI in your papers and cite our
+  technical report if you use this tool:
+    https://poggioai.github.io/papers/poggioai-msc-v0.pdf
+
+================================================================
+```
 
 ---
 
 ## Quick Start
 
 ```
-/research "Investigate whether batch normalization implicitly regularizes the spectral norm of weight matrices in shallow ReLU networks"
+/pai-msc "Investigate whether batch normalization implicitly regularizes the spectral norm of weight matrices in shallow ReLU networks"
 ```
 
 That's it. The plugin:
-1. Auto-installs the PoggioAI/MSc Python backend on first use
+1. Auto-installs the pAI/MSc Python backend on first use
 2. Passes your existing OpenClaw API keys (no separate `.env` needed)
 3. Creates an isolated run workspace with all inputs in `initial_context/`
 4. Prompts you for reference files (papers, datasets) via Telegram/interface
@@ -25,67 +43,66 @@ That's it. The plugin:
 ## What's In This Repository
 
 ```
-plugin/
 ├── openclaw.plugin.json              # Plugin manifest — name, version, config schema
 ├── package.json                      # TypeScript package (build with npm run build)
 ├── tsconfig.json                     # TypeScript compiler config
-├── README.md                        # This file
+├── README.md                         # This file
 │
-├── src/                              # TypeScript source (2,900+ lines)
+├── src/                              # TypeScript source (3,000+ lines)
 │   ├── index.ts                      # Entry point: definePluginEntry() — registers
 │   │                                 #   4 commands, 4 tools, 1 background service,
 │   │                                 #   and a shutdown hook
 │   │
 │   ├── commands/                     # User-facing slash commands
-│   │   ├── research.ts              # /research "hypothesis" [flags] — the main entry
-│   │   ├── research-status.ts       # /research-status — show current stage + budget
-│   │   ├── research-stop.ts         # /research-stop — kill a running pipeline
-│   │   └── research-list.ts         # /research-list — list all runs in this session
+│   │   ├── research.ts               # /pai-msc "hypothesis" [flags] — the main entry
+│   │   ├── pai-msc-status.ts         # /pai-msc-status — show current stage + budget
+│   │   ├── pai-msc-stop.ts           # /pai-msc-stop — kill a running pipeline
+│   │   └── pai-msc-list.ts           # /pai-msc-list — list all runs in this session
 │   │
 │   ├── tools/                        # Agent-callable tools (programmatic access)
-│   │   ├── run-pipeline.ts          # consortium.runPipeline — start a run
-│   │   ├── steer-pipeline.ts        # consortium.steerPipeline — inject instructions
-│   │   ├── get-results.ts           # consortium.getResults — retrieve status + paper
-│   │   └── approve-milestone.ts     # consortium.approveMilestone — gate responses
+│   │   ├── run-pipeline.ts           # pai-msc.runPipeline — start a run
+│   │   ├── steer-pipeline.ts         # pai-msc.steerPipeline — inject instructions
+│   │   ├── get-results.ts            # pai-msc.getResults — retrieve status + paper
+│   │   └── approve-milestone.ts      # pai-msc.approveMilestone — gate responses
 │   │
 │   ├── services/                     # Core services
-│   │   ├── workspace-manager.ts     # Creates per-run workspace with initial_context/,
-│   │   │                            #   logs/, uploads/ directories. All run data is
-│   │   │                            #   isolated under ~/.openclaw/poggioai-msc/runs/
-│   │   ├── upload-handler.ts        # Prompts user for reference files via Telegram/
-│   │   │                            #   interface with 3-strategy fallback. Saves to
-│   │   │                            #   initial_context/uploads/
-│   │   ├── installer.ts             # Auto-install: clone repo → conda env → pip →
-│   │   │                            #   patch prompts → preflight check → sentinel
-│   │   ├── process-manager.ts       # Spawn Python subprocess with workspace-aware
-│   │   │                            #   env. Logs to logs/stdout.log + stderr.log
-│   │   ├── progress-poller.ts       # Background service: polls every 15s for stage
-│   │   │                            #   changes, budget thresholds, completion/failure.
-│   │   │                            #   Also handles the narrative voice hook and
-│   │   │                            #   review score escalation.
-│   │   └── quality-injector.ts      # Copies backtested prompts + style guide into
-│   │                                #   initial_context/ and paper_workspace/
+│   │   ├── workspace-manager.ts      # Creates per-run workspace with initial_context/,
+│   │   │                             #   logs/, uploads/ directories. All run data is
+│   │   │                             #   isolated under ~/.openclaw/poggioai-msc/runs/
+│   │   ├── upload-handler.ts         # Prompts user for reference files via Telegram/
+│   │   │                             #   interface with 3-strategy fallback. Saves to
+│   │   │                             #   initial_context/uploads/
+│   │   ├── installer.ts              # Auto-install: clone repo → conda env → pip →
+│   │   │                             #   patch prompts → preflight check → sentinel
+│   │   ├── process-manager.ts        # Spawn Python subprocess with workspace-aware
+│   │   │                             #   env. Logs to logs/stdout.log + stderr.log
+│   │   ├── progress-poller.ts        # Background service: polls every 15s for stage
+│   │   │                             #   changes, budget thresholds, completion/failure.
+│   │   │                             #   Also handles the narrative voice hook and
+│   │   │                             #   review score escalation.
+│   │   └── quality-injector.ts       # Copies backtested prompts + style guide into
+│   │                                 #   initial_context/ and paper_workspace/
 │   │
 │   ├── bridge/                       # Integration layer between plugin and Python backend
-│   │   ├── env-passthrough.ts       # Reads API keys from OpenClaw env → writes .env
-│   │   ├── config-writer.ts         # Generates .llm_config.yaml from preset + flags
-│   │   ├── steering-client.ts       # HTTP client for consortium's live steering API
-│   │   │                            #   (POST /interrupt, /instruction, GET /status)
-│   │   └── result-reader.ts         # Reads run_summary.json, budget_state.json,
-│   │                                #   review_verdict.json, finds paper file
+│   │   ├── env-passthrough.ts        # Reads API keys from OpenClaw env → writes .env
+│   │   ├── config-writer.ts          # Generates .llm_config.yaml from preset + flags
+│   │   ├── steering-client.ts        # HTTP client for live steering API
+│   │   │                             #   (POST /interrupt, /instruction, GET /status)
+│   │   └── result-reader.ts          # Reads run_summary.json, budget_state.json,
+│   │                                 #   review_verdict.json, finds paper file
 │   │
 │   ├── defaults/                     # Configuration defaults
-│   │   ├── quality-presets.ts       # QUALITY_MAX and QUALITY_FAST presets with all
-│   │   │                            #   CLI flag values pre-configured
-│   │   └── stage-names.ts           # 24 pipeline stage constants + human-readable
-│   │                                #   display names for progress messages
+│   │   ├── quality-presets.ts        # QUALITY_MAX and QUALITY_FAST presets with all
+│   │   │                             #   CLI flag values pre-configured
+│   │   └── stage-names.ts            # 24 pipeline stage constants + human-readable
+│   │                                 #   display names for progress messages
 │   │
 │   └── types/                        # TypeScript type definitions
-│       ├── openclaw-api.ts          # OpenClawApi interface + runtime guards
-│       ├── pipeline.ts              # RunHandle, PipelineOptions, StageEvent, RunSummary
-│       ├── config.ts                # PluginConfig interface + DEFAULT_CONFIG
-│       ├── budget.ts                # BudgetState, BudgetEntry, BUDGET_THRESHOLDS
-│       └── steering.ts             # SteeringInstruction, SteeringStatus, ReviewVerdict
+│       ├── openclaw-api.ts           # OpenClawApi interface + runtime guards
+│       ├── pipeline.ts               # RunHandle, PipelineOptions, StageEvent, RunSummary
+│       ├── config.ts                 # PluginConfig interface + DEFAULT_CONFIG
+│       ├── budget.ts                 # BudgetState, BudgetEntry, BUDGET_THRESHOLDS
+│       └── steering.ts              # SteeringInstruction, SteeringStatus, ReviewVerdict
 │
 ├── assets/                           # Quality artifacts (ported from backtested Claude skill)
 │   │
@@ -103,7 +120,7 @@ plugin/
 │       ├── 01-persona-practical.md   # Practical Compass persona
 │       ├── 02-persona-rigor.md       # Rigor & Novelty persona
 │       ├── 03-persona-narrative.md   # Narrative Architect persona
-│       ├── 04-persona-synthesis.md   # Synthesis coordinator (min 2 debate rounds)
+│       ├── 04-persona-synthesis.md   # Synthesis coordinator (min 3 debate rounds)
 │       ├── 05-literature-review.md   # Adversarial novelty falsification
 │       ├── 06-brainstorm.md          # 3-phase: divergent → convergent → dependency
 │       ├── 07-formalize-goals.md     # Goal formalization + track decomposition
@@ -141,14 +158,14 @@ plugin/
 
 ### The Pipeline
 
-When you run `/research "hypothesis"`, the plugin orchestrates a 22-agent pipeline:
+When you run `/pai-msc "hypothesis"`, the plugin orchestrates a 22-agent pipeline:
 
 ```
-/research "hypothesis"
+/pai-msc "hypothesis"
   │
   │ ── Plugin Layer ──────────────────────────────────────────────
   │
-  ├─ 1. Auto-install consortium Python backend (first time only)
+  ├─ 1. Auto-install pAI/MSc Python backend (first time only)
   ├─ 2. Create isolated run workspace under ~/.openclaw/poggioai-msc/runs/
   ├─ 3. Copy prompts + style guide → initial_context/
   ├─ 4. Write task.txt + pipeline_options.json → initial_context/
@@ -156,31 +173,34 @@ When you run `/research "hypothesis"`, the plugin orchestrates a 22-agent pipeli
   ├─ 6. Write .env + .llm_config.yaml (per-run, not shared)
   ├─ 7. Spawn: python launch_multiagent.py --resume {workspace} [flags]
   │
-  │ ── Consortium Pipeline (Python/LangGraph) ───────────────────
+  │ ── pAI/MSc Pipeline (Python/LangGraph) ──────────────────────
   │
-  ├─ Phase 1: Persona Debate
-  │     3 personas (Practical, Rigor, Narrative) debate for 3 rounds.
-  │     Each round must be HARDER than the last. Synthesis produces
-  │     a research proposal.
+  ├─ Phase 1: Persona Debate (3-5 rounds)
+  │     3 personas (Practical, Rigor, Narrative) debate in escalating
+  │     rounds. Each round must be HARDER than the last. Minimum 3
+  │     rounds; extends to 5 if any persona still rejects. Synthesis
+  │     produces a research proposal.
   │
-  ├─ Phase 2: Adversarial Literature Review
+  ├─ Phase 2: Adversarial Literature Review (2-5 passes)
   │     Assumes your claims are already known. Searches ICML, NeurIPS,
   │     JMLR, COLT, zbMATH, MathOverflow. Assigns per-claim status:
   │     OPEN / PARTIAL / KNOWN / EQUIVALENT_KNOWN.
   │
   ├─ [GATE: Feasibility] ── blocks if core hypothesis marked KNOWN
   │
-  ├─ Phase 3: Brainstorm (3+ approaches with risk profiles)
-  ├─ Phase 4: Formalize Goals + Track Decomposition
-  ├─ Phase 5: Research Plan
+  ├─ Phase 3: Brainstorm (2-5 passes, 3+ approaches with risk profiles)
+  ├─ Phase 4: Formalize Goals + Track Decomposition (2-5 passes)
+  ├─ Phase 5: Research Plan (2-3 passes)
   │
   ├─ [PARALLEL TRACKS] ─────────────────────────────────────────
-  │   ├─ Theory Track (if --math):
+  │   ├─ Theory Track (math agents enabled by default):
   │   │   Math Lit → Proposer → Prover → Adversarial Verifier
+  │   │   (each phase: 2+ passes, unbounded for proofs)
   │   └─ Experiment Track:
   │       Design → Execute → Adversarial Verification
+  │       (each phase: 2+ passes, unbounded for experiments)
   │
-  ├─ Phase 6: Track Merge + Completion Check
+  ├─ Phase 6: Track Merge (2-3 passes) + Completion Check
   │     3-way routing: COMPLETE (≥80%) → proceed
   │                    INCOMPLETE (50-80%) → retry goals (max 3)
   │                    RETHINK (<50%) → restart brainstorm (max 3)
@@ -188,6 +208,9 @@ When you run `/research "hypothesis"`, the plugin orchestrates a 22-agent pipeli
   ├─ [GATE: Duality Check] ── theory-experiment consistency
   │
   ├─ Phase 7: Resource Preparation (figures, tables, bib)
+  │
+  ├─ Phase 7b: Pre-Writeup Council (2 advisory debate rounds)
+  │     Personas re-evaluate formalized results before writing.
   │
   ├─ [HOOK: Narrative Voice] ── plugin injects tone/voice guidance
   │     via automated steering before writeup starts
@@ -197,16 +220,20 @@ When you run `/research "hypothesis"`, the plugin orchestrates a 22-agent pipeli
   │     Passes 7-12: Review cycle (re-read → revise → recompile)
   │     Reads author_style_guide.md + narrative_brief.md before writing.
   │
-  ├─ Phase 9: Proofreading + AI-Voice Detection
+  ├─ Phase 9: Proofreading + AI-Voice Detection (2-5 passes)
   ├─ Phase 10: Adversarial Review (hard blockers B1-B5)
   │
   ├─ [GATE: Validation] ── escalating failure handling:
   │     Score ≤ 3 → full restart from persona debate
   │     Score 4-5 (1st fail) → rewrite
   │     Score 4-5 (2nd fail) → full restart
-  │     Score ≥ 6 → pass
+  │     Score ≥ 7 → pass (max-quality preset)
   │
-  └─ Phase 11: Post-Review Persona Council (Narrative has 1 veto)
+  └─ Phase 11: Post-Review Persona Council (2 debate rounds)
+  │     Narrative Architect has 1 veto over the writeup.
+  │     If all accept → DONE
+  │     If Narrative rejects (1st time) → rewrite loop
+  │     If Narrative rejects (2nd time) → finalize with concerns saved
   │
   │ ── Plugin Layer ──────────────────────────────────────────────
   │
@@ -220,23 +247,23 @@ When you run `/research "hypothesis"`, the plugin orchestrates a 22-agent pipeli
 While the pipeline runs, you'll see messages like:
 
 ```
-[1/24] Persona Debate (3 perspectives) (0s)
+[1/24] Persona Debate (5 escalating rounds) (0s)
 [2/24] Literature Review (adversarial novelty check) (3m | $2.15)
 [5/24] Formalizing Research Goals (8m | $5.40)
-Budget 25%: $37.50 / $150.00
+Budget 25%: $75.00 / $300.00
 [15/24] Running Experiments (45m | $42.18)
-Budget 50%: $75.00 / $150.00
-[22/24] Writing Paper (12-pass cycle) (1h 30m | $68.32)
+Budget 50%: $150.00 / $300.00
+[22/24] Writing Paper (12-pass cycle) (1h 30m | $98.32)
 Injecting narrative voice guidance before writeup...
-[23/24] Proofreading & AI-Voice Check (2h 05m | $82.15)
-[24/24] Adversarial Peer Review (2h 12m | $87.30)
-Review Score: 7/10 | AI Voice Risk: LOW
+[23/24] Proofreading & AI-Voice Check (2h 05m | $112.15)
+[24/24] Adversarial Peer Review (2h 12m | $117.30)
+Review Score: 8/10 | AI Voice Risk: LOW
 
 Research Complete!
 Task: "Investigate whether batch normalization..."
-Model: claude-opus-4-6 | Duration: 2h 15m
-Cost: $87.32 / $150.00
-Review Score: 7/10 | AI Voice Risk: LOW
+Model: claude-opus-4-6 | Duration: 3h 45m
+Cost: $142.30 / $300.00
+Review Score: 8/10 | AI Voice Risk: LOW
 Stages: 24/24 completed
 Workspace: ~/.openclaw/poggioai-msc/runs/run-2026-03-29T15-30-22-a1b2/
 Paper: ~/.openclaw/poggioai-msc/runs/run-2026-03-29T15-30-22-a1b2/paper_workspace/final_paper.pdf
@@ -246,7 +273,7 @@ Paper: ~/.openclaw/poggioai-msc/runs/run-2026-03-29T15-30-22-a1b2/paper_workspac
 
 ## Commands
 
-### `/research "hypothesis" [flags]`
+### `/pai-msc "hypothesis" [flags]`
 
 Start a new research pipeline run.
 
@@ -254,13 +281,13 @@ Start a new research pipeline run.
 |------|---------|-------------|
 | (positional) | required | Research hypothesis / task description |
 | `--preset` | `max-quality` | Quality preset: `max-quality` or `fast` |
-| `--model` | `claude-opus-4-6` | LLM model (any model supported by consortium) |
-| `--budget` | `150` | Budget cap in USD |
+| `--model` | `claude-opus-4-6` | LLM model (any model supported by pAI/MSc) |
+| `--budget` | `300` | Budget cap in USD |
 | `--output` | `latex` | Output format: `latex` or `markdown` |
 | `--mode` | `local` | Deployment: `local` (CPU), `tinker` (GPU), `hpc` (SLURM) |
 | `--math` / `--no-math` | `--math` | Enable/disable theory track |
 | `--counsel` / `--no-counsel` | `--counsel` | Enable/disable multi-model debate |
-| `--tree-search` | off | Enable parallel proof strategies |
+| `--tree-search` | on (max-quality) | Enable parallel proof strategies |
 | `--style-guide PATH` | bundled | Path to a custom author style guide |
 | `--attach PATH` | — | Attach a reference file (repeatable). Saved to `initial_context/uploads/` |
 | `--no-upload-prompt` | off | Skip the interactive file upload prompt |
@@ -270,40 +297,40 @@ Start a new research pipeline run.
 **Examples:**
 
 ```bash
-# Maximum quality (default) — Opus, LaTeX+PDF, counsel, math
-/research "Investigate whether batch normalization implicitly regularizes spectral norm"
+# Maximum quality (default) — Opus, LaTeX+PDF, counsel, math, tree search, 12-pass writeup
+/pai-msc "Investigate whether batch normalization implicitly regularizes spectral norm"
 
 # Quick draft — Sonnet, markdown, no counsel, $25 budget
-/research --preset fast "quick investigation of learning rate warmup effects"
+/pai-msc --preset fast "quick investigation of learning rate warmup effects"
 
 # Custom model and budget
-/research --model claude-sonnet-4-6 --budget 50 "effect of dropout on spectral gap"
+/pai-msc --model claude-sonnet-4-6 --budget 50 "effect of dropout on spectral gap"
 
 # With custom style guide
-/research --style-guide ~/my-style-guide.md "your hypothesis"
+/pai-msc --style-guide ~/my-style-guide.md "your hypothesis"
 
 # Attach reference papers/datasets (repeatable)
-/research --attach ~/papers/related-work.pdf --attach ~/data/dataset.csv "your hypothesis"
+/pai-msc --attach ~/papers/related-work.pdf --attach ~/data/dataset.csv "your hypothesis"
 
 # Skip the upload prompt (for automation)
-/research --no-upload-prompt "your hypothesis"
+/pai-msc --no-upload-prompt "your hypothesis"
 
 # Resume a failed run
-/research --resume ~/.openclaw/poggioai-msc/runs/run-2026-03-29T15-30-22-a1b2 "original hypothesis"
+/pai-msc --resume ~/.openclaw/poggioai-msc/runs/run-2026-03-29T15-30-22-a1b2 "original hypothesis"
 
 # Dry run — validates config, shows what would run, costs nothing
-/research --dry-run "test hypothesis"
+/pai-msc --dry-run "test hypothesis"
 ```
 
-### `/research-status [run-id]`
+### `/pai-msc-status [run-id]`
 
 Show the current status of a running pipeline: stage, elapsed time, budget usage.
 
-### `/research-stop [run-id]`
+### `/pai-msc-stop [run-id]`
 
 Stop a running pipeline. The workspace is preserved — you can resume later with `--resume`.
 
-### `/research-list`
+### `/pai-msc-list`
 
 List all runs in the current session with status, cost, and duration.
 
@@ -313,20 +340,30 @@ List all runs in the current session with status, cost, and duration.
 
 ### `max-quality` (default)
 
+Everything turned to maximum. Matches the Claude skill's multi-pass execution protocol.
+
 | Setting | Value |
 |---------|-------|
 | Model | `claude-opus-4-6` |
-| Budget | $150 |
+| Budget | $300 |
 | Output | LaTeX + PDF |
 | Math agents | Enabled |
 | Counsel (multi-model debate) | Enabled |
-| Persona debate rounds | 3 |
-| Min review score | 6/10 |
+| Tree search (parallel proofs) | Enabled |
+| Persona debate rounds | 5 (escalating) |
+| Pre-writeup council rounds | 2 |
+| Post-review council rounds | 2 |
+| Writeup passes | 12 (6 draft + 6 review) |
+| Min passes per phase | 2 |
+| Max ideation cycles | 2 |
+| Counsel debate rounds | 5 |
+| Followup max iterations | 5 |
+| Min review score | 7/10 |
 | PDF required | Yes |
 | Paper artifact checks | Enforced |
-| Writeup revision loops | Up to 3 |
-| **Expected cost** | **$50-200** |
-| **Expected time** | **2-5 hours** |
+| Editorial artifact checks | Enforced |
+| **Expected cost** | **$100-300** |
+| **Expected time** | **3-8 hours** |
 
 ### `fast`
 
@@ -337,11 +374,16 @@ List all runs in the current session with status, cost, and duration.
 | Output | Markdown |
 | Math agents | Disabled |
 | Counsel | Disabled |
+| Tree search | Disabled |
 | Persona debate rounds | 2 |
+| Pre-writeup council rounds | 1 |
+| Post-review council rounds | 1 |
+| Writeup passes | 3 |
+| Min passes per phase | 1 |
+| Max ideation cycles | 1 |
 | Min review score | 5/10 |
 | PDF required | No |
 | Paper artifact checks | Not enforced |
-| Writeup revision loops | Up to 2 |
 | **Expected cost** | **$5-15** |
 | **Expected time** | **20-60 minutes** |
 
@@ -353,10 +395,10 @@ The plugin registers 4 tools that the OpenClaw agent can call programmatically (
 
 | Tool | Description |
 |------|-------------|
-| `consortium.runPipeline` | Start a pipeline run with structured parameters |
-| `consortium.steerPipeline` | Inject instructions into a running pipeline |
-| `consortium.getResults` | Get status, budget, review score, artifacts, paper path |
-| `consortium.approveMilestone` | Respond to human-in-the-loop gates (approve/modify/abort) |
+| `pai-msc.runPipeline` | Start a pipeline run with structured parameters |
+| `pai-msc.steerPipeline` | Inject instructions into a running pipeline |
+| `pai-msc.getResults` | Get status, budget, review score, artifacts, paper path |
+| `pai-msc.approveMilestone` | Respond to human-in-the-loop gates (approve/modify/abort) |
 
 ---
 
@@ -426,29 +468,27 @@ Files are saved to `initial_context/uploads/` and the task description is amende
 
 ## Custom Author Style Guide
 
-The plugin ships a 647-line default style guide tailored for ML theory papers. You can override it with your own:
+The plugin ships a 647-line default style guide tailored for ML theory papers (`assets/author_style_guide_default.md`). It covers:
+
+- **Non-negotiable principles** — one central intellectual spine, epistemic status per sentence, reader-first organization, compression, no global incoherence
+- **Positive exemplars** — 5 detailed case studies from von Luxburg, Vershynin, Tropp, Bottou, and Peyton Jones with specific virtues to imitate
+- **Global anti-patterns** — concrete failure modes at paper, section, sentence, and epistemic levels that make papers feel AI-generated
+- **Abstract rules** — 120-180 words, no theorem refs, 5 specific tasks the abstract must accomplish
+- **Related-work rules** — organize by ideas not authors, include judgment, avoid citation-led paragraphs
+- **Concrete lints** — 23+ specific checks the writeup agent enforces
+- **Epistemic lints** — "prove" only for proved results, "observe" only for experiments, "conjecture" for open questions
+- **Case studies** — two detailed diagnoses of weak abstracts and related-work sections with fixed versions
+- **Self-audit checklist** — 5-tier check (paper → abstract → related-work → epistemic → deletion)
+
+Override with your own:
 
 ```bash
-/research --style-guide /path/to/my-style-guide.md "hypothesis"
+/pai-msc --style-guide /path/to/my-style-guide.md "hypothesis"
 ```
 
-Your style guide is copied into the workspace as `author_style_guide.md`. The writeup agent reads it before writing any prose.
+Your style guide is copied into `initial_context/author_style_guide.md`. If you provide one, the bundled default is still read for any topics your guide doesn't cover.
 
-See `examples/custom-style-guide-example.md` for a template showing what to include:
-- Tone and voice preferences
-- Target length and format
-- Field-specific terminology rules
-- Anti-patterns to avoid
-
-The bundled default (`assets/author_style_guide_default.md`) covers:
-- Non-negotiable principles (one central spine, epistemic status per sentence)
-- Global anti-patterns that make papers feel AI-generated (paper/section/sentence/epistemic levels)
-- Abstract rules (120-180 words, no theorem refs, no "contributions are N-fold")
-- Related-work rules (organize by ideas not authors, include judgment)
-- Concrete lints the writeup agent enforces
-- Epistemic lints ("prove" only for proved results, "observe" only for experiments)
-- Case studies diagnosing weak abstracts and related-work sections with fixes
-- Self-audit checklist
+See `examples/custom-style-guide-example.md` for a template.
 
 ---
 
@@ -465,7 +505,13 @@ This plugin incorporates improvements developed through extensive backtesting of
 | **Narrative voice phase** | Dedicated pre-writeup step that sets surprise markers, related-work framing, discussion blueprint, and anti-AI-voice rules. Injected via automated steering. |
 | **Escalating review failure** | Score ≤ 3 → full pipeline restart. Score 4-5 → rewrite, then restart if still fails. No infinite rewriting loops. |
 | **12-pass writeup** | 2 full edit cycles (6 draft passes + 6 review passes) with the style guide enforced throughout |
-| **3-round persona debate** | Minimum 3 rounds, each round must be harder. No single-pass rubber-stamping. |
+| **5-round persona debate** | Up to 5 escalating rounds. Each round must be harder. No single-pass rubber-stamping. |
+| **Pre-writeup council** | 2 advisory rounds before writing to catch narrative/consistency issues early |
+| **Post-review council** | 2 debate rounds after validation. Narrative Architect has 1 veto. |
+| **Multi-pass execution** | Every phase runs 2+ passes minimum. Resume logic detects incomplete artifacts and refines. |
+| **Tree search** | Parallel proof strategies for theory track (enabled by default in max-quality) |
+| **Per-run workspace isolation** | `.env`, config, logs all scoped to run directory. No concurrent run interference. |
+| **initial_context/ archival** | All inputs (task, prompts, style guide, uploads) preserved for reproducibility |
 
 ---
 
@@ -476,7 +522,7 @@ Plugin configuration is set in your OpenClaw config file (`~/.openclaw/openclaw.
 ```json
 {
   "plugins": {
-    "poggioai-msc": {
+    "pai-msc-openclaw": {
       "enabled": true,
       "config": {
         "consortiumPath": "",
@@ -484,7 +530,7 @@ Plugin configuration is set in your OpenClaw config file (`~/.openclaw/openclaw.
         "defaultPreset": "max-quality",
         "defaultMode": "local",
         "defaultModel": "claude-opus-4-6",
-        "defaultBudgetUsd": 150,
+        "defaultBudgetUsd": 300,
         "progressPollIntervalMs": 15000,
         "steeringBasePort": 5001,
         "uploadTimeoutMs": 60000
@@ -496,19 +542,19 @@ Plugin configuration is set in your OpenClaw config file (`~/.openclaw/openclaw.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `consortiumPath` | `""` (auto-install) | Path to existing consortium installation. Leave empty to auto-install to `~/.openclaw/poggioai-msc/repo`. |
+| `consortiumPath` | `""` (auto-install) | Path to existing pAI/MSc installation. Leave empty to auto-install to `~/.openclaw/poggioai-msc/repo`. |
 | `condaEnvName` | `"poggioai-msc"` | Conda environment name for the Python backend. |
 | `defaultPreset` | `"max-quality"` | Default quality preset when no `--preset` flag given. |
 | `defaultMode` | `"local"` | Deployment mode: `local` (CPU), `tinker` (GPU cluster), `hpc` (SLURM). |
 | `defaultModel` | `"claude-opus-4-6"` | Default LLM model. |
-| `defaultBudgetUsd` | `150` | Default budget cap per run. |
+| `defaultBudgetUsd` | `300` | Default budget cap per run. |
 | `progressPollIntervalMs` | `15000` | How often to poll for progress (ms). |
-| `steeringBasePort` | `5001` | Base port for the consortium callback server. |
+| `steeringBasePort` | `5001` | Base port for the callback server. |
 | `uploadTimeoutMs` | `60000` | Timeout for the file upload prompt in ms. Set to 0 to skip. |
 
 ### API Keys
 
-API keys are read from your OpenClaw environment — **no separate `.env` file needed**. The plugin passes these to the consortium backend:
+API keys are read from your OpenClaw environment — **no separate `.env` file needed**. The plugin passes these to the pAI/MSc backend:
 
 | Key | Required | Purpose |
 |-----|----------|---------|
@@ -530,7 +576,7 @@ API keys are read from your OpenClaw environment — **no separate `.env` file n
 | Requirement | Status | Notes |
 |-------------|--------|-------|
 | **Node.js** >= 20 | Required | For the OpenClaw gateway |
-| **git** | Required | For cloning the consortium repo |
+| **git** | Required | For cloning the pAI/MSc repo |
 | **conda** | Recommended | For Python env management (auto-detected) |
 | **Python** >= 3.11 | Auto-installed | Via conda or system python |
 | **pdflatex** | Optional | For LaTeX → PDF. Without it, output degrades to markdown. Install: `brew install --cask mactex-no-gui` |
@@ -539,7 +585,7 @@ API keys are read from your OpenClaw environment — **no separate `.env` file n
 Run `scripts/check-prereqs.sh` to verify everything:
 
 ```bash
-cd plugin && bash scripts/check-prereqs.sh
+bash scripts/check-prereqs.sh
 ```
 
 ---
@@ -549,27 +595,27 @@ cd plugin && bash scripts/check-prereqs.sh
 ### From OpenClaw (when published)
 
 ```bash
-openclaw plugins install poggioai-msc
+openclaw plugins install pai-msc-openclaw
 ```
 
 ### Manual Installation
 
 ```bash
-git clone https://github.com/PoggioAI/PoggioAI-MSc-openclaw.git
-cd PoggioAI-MSc-openclaw/plugin
+git clone https://github.com/PoggioAI/PoggioAI_MSc-openclaw.git
+cd PoggioAI_MSc-openclaw
 npm install
 npm run build
 ```
 
 Then either:
-- Copy/symlink the `plugin/` directory to `~/.openclaw/plugins/poggioai-msc`
+- Copy/symlink the directory to `~/.openclaw/plugins/pai-msc-openclaw`
 - Or add the path to your OpenClaw config: `plugins.load.paths: ["/path/to/plugin"]`
 
 Restart the OpenClaw gateway to load the plugin.
 
 ### Pre-installing the Python backend
 
-The plugin auto-installs the consortium on first `/research` use. To pre-install manually:
+The plugin auto-installs the pAI/MSc backend on first `/pai-msc` use. To pre-install manually:
 
 ```bash
 bash scripts/install-consortium.sh
@@ -614,7 +660,7 @@ Check the workspace for logs and partial artifacts:
 Resume from where it failed:
 
 ```
-/research --resume ~/.openclaw/poggioai-msc/runs/run-<timestamp>-<rand> "original hypothesis"
+/pai-msc --resume ~/.openclaw/poggioai-msc/runs/run-<timestamp>-<rand> "original hypothesis"
 ```
 
 ### Budget exceeded
@@ -622,7 +668,7 @@ Resume from where it failed:
 The pipeline stops safely when the budget is hit. The workspace is preserved. You can resume with a higher budget:
 
 ```
-/research --resume /path/to/workspace --budget 300 "hypothesis"
+/pai-msc --resume /path/to/workspace --budget 500 "hypothesis"
 ```
 
 ### Counsel mode disabled automatically
@@ -636,24 +682,22 @@ Counsel requires 3 provider keys (Anthropic + OpenAI + Google). If any are missi
 | Configuration | Cost | Runtime |
 |---------------|------|---------|
 | `--preset fast` | $5-15 | 20-60 min |
-| `--preset max-quality` (default) | $50-200 | 2-5 hrs |
-| `--preset max-quality --tree-search` | $100-400 | 3-8 hrs |
+| `--preset max-quality` (default) | $100-300 | 3-8 hrs |
 
-Costs depend on hypothesis complexity, number of revision loops triggered by quality gates, and whether counsel mode runs (3x model calls per stage).
+Costs depend on hypothesis complexity, number of revision loops triggered by quality gates, whether counsel mode runs (3x model calls per stage), and how many ideation cycles the validation gates trigger.
 
 ---
 
 ## Development
 
 ```bash
-cd plugin
 npm install
 npm run watch    # Rebuild on changes
 npm run build    # Production build
 npm run clean    # Remove dist/
 ```
 
-The plugin's TypeScript source is in `src/`. The `assets/` directory contains the quality artifacts that get injected into pipeline runs — edit these to tune prompt behavior or the style guide.
+The TypeScript source is in `src/`. The `assets/` directory contains the quality artifacts that get injected into pipeline runs — edit these to tune prompt behavior or the style guide.
 
 ---
 

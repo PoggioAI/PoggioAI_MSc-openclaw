@@ -1,5 +1,5 @@
 /**
- * consortium.getResults — retrieve results from a completed or running pipeline.
+ * pai-msc.getResults — retrieve results from a completed or running pipeline.
  */
 import { activeRuns, runHistory } from '../index.js';
 import {
@@ -13,7 +13,7 @@ import { getStageDisplay } from '../defaults/stage-names.js';
 
 export function registerGetResultsTool(api: any): void {
   api.registerTool({
-    name: 'consortium.getResults',
+    name: 'pai-msc.getResults',
     description:
       'Get the status and results of a research pipeline run. ' +
       'Returns the current stage, budget, review score, and paper path.',
@@ -36,7 +36,7 @@ export function registerGetResultsTool(api: any): void {
       }
 
       if (!run) {
-        return { error: 'No runs found. Start one with consortium.runPipeline or /research.' };
+        return { error: 'No runs found. Start one with pai-msc.runPipeline or /pai-msc.' };
       }
 
       const result: any = {

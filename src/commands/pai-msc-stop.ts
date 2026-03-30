@@ -1,5 +1,5 @@
 /**
- * /research-stop — stop a running pipeline.
+ * /pai-msc-stop — stop a running pipeline.
  */
 import { activeRuns } from '../index.js';
 import { stopPipeline } from '../services/process-manager.js';
@@ -7,9 +7,9 @@ import { composeCompletionMessage } from '../bridge/result-reader.js';
 
 export function registerResearchStopCommand(api: any): void {
   api.registerCommand({
-    name: 'research-stop',
+    name: 'pai-msc-stop',
     description: 'Stop a running research pipeline.',
-    usage: '/research-stop [run-id]',
+    usage: '/pai-msc-stop [run-id]',
 
     handler(args: string) {
       const runId = args?.trim();

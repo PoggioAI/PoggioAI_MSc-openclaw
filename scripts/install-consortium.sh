@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-consortium.sh — Manual installer for the PoggioAI/MSc consortium backend.
+# install-consortium.sh — Manual installer for the pAI/MSc-openclaw consortium backend.
 # Normally called automatically by the plugin on first use.
 # Run this directly if you want to pre-install.
 
@@ -9,7 +9,7 @@ REPO_URL="https://github.com/PoggioAI/PoggioAI_MSc.git"
 INSTALL_DIR="${1:-$HOME/.openclaw/poggioai-msc/repo}"
 ENV_NAME="${2:-poggioai-msc}"
 
-echo "=== PoggioAI/MSc Consortium Installer ==="
+echo "=== pAI/MSc-openclaw Consortium Installer ==="
 echo "Install dir: $INSTALL_DIR"
 echo "Conda env:   $ENV_NAME"
 echo ""
@@ -66,4 +66,4 @@ EOF
 
 echo ""
 echo "=== Installation Complete ==="
-echo "The research pipeline is ready. Use /research in OpenClaw to start."
+echo "The research pipeline is ready. Use /pai-msc in OpenClaw to start."

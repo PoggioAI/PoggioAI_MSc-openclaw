@@ -81,7 +81,7 @@ export function listArtifacts(
 ): Array<{ name: string; size: number; path: string }> {
   const artifacts: Array<{ name: string; size: number; path: string }> = [];
 
-  const dirs = ['initial_context', 'paper_workspace', 'math_workspace', 'experiment_workspace', 'logs'];
+  const dirs = ['initial_context', 'initial_context/uploads', 'initial_context/prompts', 'paper_workspace', 'math_workspace', 'experiment_workspace', 'logs'];
 
   for (const dir of dirs) {
     const dirPath = path.join(workspaceDir, dir);
@@ -190,7 +190,7 @@ export function composeCompletionMessage(run: RunHandle): string {
   // Resume hint on failure
   if (run.status === 'failed') {
     lines.push('');
-    lines.push(`Resume with: \`/research --resume "${run.workspaceDir}" "${run.task}"\``);
+    lines.push(`Resume with: \`/pai-msc --resume "${run.workspaceDir}" "${run.task}"\``);
   }
 
   return lines.join('\n');
@@ -219,7 +219,7 @@ export function composeFailureMessage(run: RunHandle): string {
   }
 
   lines.push('');
-  lines.push(`Resume: \`/research --resume "${run.workspaceDir}" "${run.task}"\``);
+  lines.push(`Resume: \`/pai-msc --resume "${run.workspaceDir}" "${run.task}"\``);
 
   return lines.join('\n');
 }

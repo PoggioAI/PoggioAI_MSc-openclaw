@@ -1,5 +1,5 @@
 /**
- * /research-status — show current pipeline run status.
+ * /pai-msc-status — show current pipeline run status.
  */
 import { activeRuns } from '../index.js';
 import { readBudgetState } from '../bridge/result-reader.js';
@@ -15,15 +15,15 @@ function formatDuration(seconds: number): string {
 
 export function registerResearchStatusCommand(api: any): void {
   api.registerCommand({
-    name: 'research-status',
+    name: 'pai-msc-status',
     description: 'Show the status of the current research pipeline run.',
-    usage: '/research-status [run-id]',
+    usage: '/pai-msc-status [run-id]',
 
     handler(args: string) {
       const runId = args?.trim();
 
       if (activeRuns.size === 0) {
-        api.sendMessage('No active research runs. Start one with `/research "your hypothesis"`.');
+        api.sendMessage('No active research runs. Start one with `/pai-msc "your hypothesis"`.');
         return;
       }
 

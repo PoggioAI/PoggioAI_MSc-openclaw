@@ -1,7 +1,7 @@
 {
-  "name": "openclaw-plugin-poggioai-msc",
+  "name": "openclaw-plugin-pai-msc",
   "version": "0.1.0",
-  "description": "OpenClaw plugin for PoggioAI/MSc autonomous research pipeline",
+  "description": "OpenClaw plugin for pAI/MSc-openclaw autonomous research pipeline",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
