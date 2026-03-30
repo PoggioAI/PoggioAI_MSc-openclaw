@@ -1,0 +1,67 @@
+{
+  "name": "poggioai-msc",
+  "version": "0.1.0",
+  "displayName": "PoggioAI/MSc Research Pipeline",
+  "description": "Autonomous multi-agent research pipeline: hypothesis to conference-grade manuscript in one command. Runs persona debate, adversarial lit review, parallel theory+experiment tracks, 12-pass writeup with AI-voice detection, and editorial quality gates.",
+  "author": "PoggioAI",
+  "license": "MIT",
+  "homepage": "https://github.com/PoggioAI/PoggioAI_MSc",
+  "entry": "./dist/index.js",
+  "capabilities": {
+    "tools": true,
+    "commands": true,
+    "services": true,
+    "hooks": true
+  },
+  "config": {
+    "schema": {
+      "consortiumPath": {
+        "type": "string",
+        "default": "",
+        "description": "Path to existing consortium installation. Empty = auto-install to ~/.openclaw/poggioai-msc/repo"
+      },
+      "condaEnvName": {
+        "type": "string",
+        "default": "poggioai-msc",
+        "description": "Conda environment name for the Python backend"
+      },
+      "defaultPreset": {
+        "type": "string",
+        "enum": ["max-quality", "fast"],
+        "default": "max-quality",
+        "description": "Default quality preset when no flags given"
+      },
+      "defaultMode": {
+        "type": "string",
+        "enum": ["local", "tinker", "hpc"],
+        "default": "local",
+        "description": "Deployment mode (local=CPU, tinker=GPU cluster, hpc=SLURM)"
+      },
+      "defaultModel": {
+        "type": "string",
+        "default": "claude-opus-4-6",
+        "description": "Default LLM model for max-quality preset"
+      },
+      "defaultBudgetUsd": {
+        "type": "number",
+        "default": 150,
+        "description": "Default budget cap in USD per run"
+      },
+      "progressPollIntervalMs": {
+        "type": "number",
+        "default": 15000,
+        "description": "How often to poll pipeline progress (milliseconds)"
+      },
+      "steeringBasePort": {
+        "type": "number",
+        "default": 5001,
+        "description": "Base port for consortium callback server (steering = port + 1)"
+      },
+      "uploadTimeoutMs": {
+        "type": "number",
+        "default": 60000,
+        "description": "Timeout in ms for the file upload prompt before pipeline launch (0 = skip)"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "openclaw-plugin-poggioai-msc",
+  "version": "0.1.0",
+  "description": "OpenClaw plugin for PoggioAI/MSc autonomous research pipeline",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "research",
+    "multi-agent",
+    "paper-writing",
+    "poggioai",
+    "autonomous-research"
+  ],
+  "author": "PoggioAI",
+  "license": "MIT",
+  "peerDependencies": {
+    "openclaw": ">=2026.3.0"
+  },
+  "devDependencies": {
+    "openclaw": ">=2026.3.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  },
+  "dependencies": {
+    "yaml": "^2.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist/",
+    "assets/",
+    "scripts/",
+    "examples/",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ]
+}
