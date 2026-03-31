@@ -80,33 +80,7 @@ function injectPrompts(paperWorkspace: string, assetsDir: string): void {
   const promptsDest = path.join(paperWorkspace, 'skill_prompts');
   mkdirSync(promptsDest, { recursive: true });
 
-  const promptFiles = [
-    '01-persona-practical.md',
-    '02-persona-rigor.md',
-    '03-persona-narrative.md',
-    '04-persona-synthesis.md',
-    '05-literature-review.md',
-    '06-brainstorm.md',
-    '07-formalize-goals.md',
-    '08-math-literature.md',
-    '09-math-proposer.md',
-    '10-math-prover.md',
-    '11-math-verifier.md',
-    '12-experiment-design.md',
-    '13-experimentation.md',
-    '14-experiment-verify.md',
-    '15-formalize-results.md',
-    '16-duality-check.md',
-    '17-resource-prep.md',
-    '18-writeup.md',
-    '19-proofreading.md',
-    '20-reviewer.md',
-    '21-research-plan-writeup.md',
-    '22-track-merge.md',
-    '23-verify-completion.md',
-    '24-followup-lit-review.md',
-    '25-narrative-voice.md',
-  ];
+  const promptFiles = PROMPT_FILES;
 
   for (const file of promptFiles) {
     const src = path.join(promptsSrc, file);
@@ -149,6 +123,7 @@ export function getNarrativeVoicePrompt(): string {
  * All prompt filenames to copy.
  */
 const PROMPT_FILES = [
+  // Core pipeline prompts (01-25)
   '01-persona-practical.md',
   '02-persona-rigor.md',
   '03-persona-narrative.md',
@@ -174,6 +149,11 @@ const PROMPT_FILES = [
   '23-verify-completion.md',
   '24-followup-lit-review.md',
   '25-narrative-voice.md',
+  // Explore mode prompts (30-33)
+  '30-math-explorer.md',
+  '31-experiment-explorer.md',
+  '32-cross-pollinator.md',
+  '33-explore-evaluator.md',
 ];
 
 /**

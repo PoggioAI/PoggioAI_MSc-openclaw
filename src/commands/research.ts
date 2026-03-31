@@ -83,6 +83,9 @@ function parseArgs(argsStr: string): { task: string; overrides: Partial<Pipeline
         case 'tree-search':
           overrides.enableTreeSearch = true;
           break;
+        case 'explore':
+          overrides.enableExploreMode = true;
+          break;
         case 'style-guide':
           overrides.styleGuidePath = parts[++i]?.replace(/"/g, '');
           break;
@@ -173,6 +176,7 @@ export function registerResearchCommand(api: any): void {
             '- `--math` / `--no-math` — enable/disable theory track\n' +
             '- `--counsel` / `--no-counsel` — enable/disable multi-model debate\n' +
             '- `--tree-search` — enable tree search for proofs\n' +
+            '- `--explore` — explore mode: 2-5 exploration cycles then 1 final paper cycle\n' +
             '- `--style-guide PATH` — custom author style guide\n' +
             '- `--attach PATH` — attach reference file (repeatable)\n' +
             '- `--no-upload-prompt` — skip file upload prompt\n' +
@@ -293,6 +297,7 @@ export function registerResearchCommand(api: any): void {
               options.enableMathAgents ? 'math' : null,
               options.enableCounsel ? 'counsel' : null,
               options.enableTreeSearch ? 'tree-search' : null,
+              options.enableExploreMode ? 'explore mode' : null,
             ].filter(Boolean).join(', ') || 'standard'}`,
         );
         return;
@@ -316,6 +321,7 @@ export function registerResearchCommand(api: any): void {
           options.enableMathAgents ? 'math' : null,
           options.enableCounsel ? 'counsel' : null,
           options.enableTreeSearch ? 'tree-search' : null,
+          options.enableExploreMode ? 'explore mode' : null,
         ].filter(Boolean).join(', ') || 'standard'}`,
         `**Multi-pass:** ${options.writeupPasses} writeup passes | ${options.personaDebateRounds} persona rounds | ${options.minPassesPerPhase} min passes/phase`,
         uploadedFiles.length > 0

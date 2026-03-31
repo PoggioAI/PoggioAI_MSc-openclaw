@@ -44,7 +44,7 @@
       },
       "defaultBudgetUsd": {
         "type": "number",
-        "default": 150,
+        "default": 300,
         "description": "Default budget cap in USD per run"
       },
       "progressPollIntervalMs": {
@@ -61,6 +61,16 @@
         "type": "number",
         "default": 60000,
         "description": "Timeout in ms for the file upload prompt before pipeline launch (0 = skip)"
+      },
+      "agentTimeoutMs": {
+        "type": "number",
+        "default": 2700000,
+        "description": "Agent timeout in ms (2700000 = 45 min). High value needed for multi-pass phases like 12-pass writeup."
+      },
+      "enableExploreMode": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable explore mode by default (2-5 exploration cycles + 1 final paper cycle). Can also be enabled per-run with --explore."
       }
     }
   }

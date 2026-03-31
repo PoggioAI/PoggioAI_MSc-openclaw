@@ -21,6 +21,8 @@ export interface PluginConfig {
   steeringBasePort: number;
   /** Timeout in ms for the file upload prompt (0 = skip). */
   uploadTimeoutMs: number;
+  /** Agent timeout in ms. Set high (2700000 = 45 min) for multi-pass phases. */
+  agentTimeoutMs: number;
 }
 
 export const DEFAULT_CONFIG: PluginConfig = {
@@ -29,8 +31,9 @@ export const DEFAULT_CONFIG: PluginConfig = {
   defaultPreset: 'max-quality',
   defaultMode: 'local',
   defaultModel: 'claude-opus-4-6',
-  defaultBudgetUsd: 150,
+  defaultBudgetUsd: 300,
   progressPollIntervalMs: 15000,
   steeringBasePort: 5001,
   uploadTimeoutMs: 60000,
+  agentTimeoutMs: 2700000,
 };

@@ -81,7 +81,13 @@ export function listArtifacts(
 ): Array<{ name: string; size: number; path: string }> {
   const artifacts: Array<{ name: string; size: number; path: string }> = [];
 
-  const dirs = ['initial_context', 'initial_context/uploads', 'initial_context/prompts', 'paper_workspace', 'math_workspace', 'experiment_workspace', 'logs'];
+  const dirs = [
+    'initial_context', 'initial_context/uploads', 'initial_context/prompts',
+    'paper_workspace', 'math_workspace', 'experiment_workspace', 'logs',
+    // Cycle archives and human review folders
+    'cycle_0', 'cycle_1', 'cycle_2',
+    'review_1', 'review_2', 'review_3',
+  ];
 
   for (const dir of dirs) {
     const dirPath = path.join(workspaceDir, dir);

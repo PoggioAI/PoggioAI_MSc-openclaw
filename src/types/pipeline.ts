@@ -58,6 +58,10 @@ export interface PipelineOptions {
   preWriteupDebateRounds: number;
   /** Post-review persona debate rounds. */
   postReviewDebateRounds: number;
+  /** Enable explore mode (2-5 exploration cycles + 1 final standard cycle). */
+  enableExploreMode?: boolean;
+  /** Per-phase pass limits (null max = unbounded). Matches SKILL.md multi-pass table. */
+  passLimits: Record<string, { min: number; max: number | null }>;
   /** Skip the file upload prompt before pipeline launch. */
   skipUploadPrompt?: boolean;
   /** Local file paths to attach (--attach flag, repeatable). */

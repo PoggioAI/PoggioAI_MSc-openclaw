@@ -8,7 +8,7 @@ import { PipelineOptions } from '../types/pipeline.js';
  * QUALITY_MAX: Best possible paper. Everything turned to 11.
  * Uses Opus, counsel, math agents, tree search, strict review gates,
  * 5-round persona debate, 12-pass writeup, 2 ideation cycles.
- * Matches the Claude skill's multi-pass execution protocol exactly.
+ * Per-phase pass limits match the SKILL.md multi-pass execution protocol.
  * Cost: ~$100-300 | Time: 3-8 hours
  *
  * QUALITY_FAST: Quick draft. Uses Sonnet, no counsel, no math,
@@ -17,6 +17,59 @@ import { PipelineOptions } from '../types/pipeline.js';
  */
 
 type PresetDefaults = Omit<PipelineOptions, 'task' | 'styleGuidePath' | 'resumePath'>;
+
+/**
+ * Per-phase pass limits from SKILL.md (lines 676-700).
+ * null max means unbounded — the orchestrator loops until the subagent
+ * reports completion or stall detection triggers.
+ */
+const PASS_LIMITS_MAX: Record<string, { min: number; max: number | null }> = {
+  persona_council:          { min: 1,  max: 1 },
+  literature_review:        { min: 2,  max: 5 },
+  brainstorm:               { min: 2,  max: 5 },
+  formalize_goals:          { min: 2,  max: 5 },
+  research_plan_writeup:    { min: 2,  max: 3 },
+  math_literature:          { min: 2,  max: null },
+  math_proposer:            { min: 2,  max: null },
+  math_prover:              { min: 2,  max: null },
+  math_verifier:            { min: 2,  max: null },
+  experiment_design:        { min: 2,  max: 5 },
+  experimentation:          { min: 2,  max: null },
+  experiment_verify:        { min: 2,  max: null },
+  track_merge:              { min: 2,  max: 3 },
+  verify_completion:        { min: 1,  max: 1 },
+  formalize_results:        { min: 2,  max: 5 },
+  duality_check:            { min: 1,  max: 1 },
+  resource_prep:            { min: 2,  max: 3 },
+  writeup:                  { min: 12, max: 12 },
+  proofreading:             { min: 2,  max: 5 },
+  reviewer:                 { min: 1,  max: 1 },
+  persona_post_review:      { min: 1,  max: 1 },
+};
+
+const PASS_LIMITS_FAST: Record<string, { min: number; max: number | null }> = {
+  persona_council:          { min: 1,  max: 1 },
+  literature_review:        { min: 1,  max: 2 },
+  brainstorm:               { min: 1,  max: 2 },
+  formalize_goals:          { min: 1,  max: 2 },
+  research_plan_writeup:    { min: 1,  max: 1 },
+  math_literature:          { min: 1,  max: 2 },
+  math_proposer:            { min: 1,  max: 2 },
+  math_prover:              { min: 1,  max: 2 },
+  math_verifier:            { min: 1,  max: 2 },
+  experiment_design:        { min: 1,  max: 2 },
+  experimentation:          { min: 1,  max: 2 },
+  experiment_verify:        { min: 1,  max: 2 },
+  track_merge:              { min: 1,  max: 1 },
+  verify_completion:        { min: 1,  max: 1 },
+  formalize_results:        { min: 1,  max: 2 },
+  duality_check:            { min: 1,  max: 1 },
+  resource_prep:            { min: 1,  max: 1 },
+  writeup:                  { min: 3,  max: 3 },
+  proofreading:             { min: 1,  max: 2 },
+  reviewer:                 { min: 1,  max: 1 },
+  persona_post_review:      { min: 1,  max: 1 },
+};
 
 export const QUALITY_MAX: PresetDefaults = {
   preset: 'max-quality',
@@ -29,6 +82,7 @@ export const QUALITY_MAX: PresetDefaults = {
   enableMathAgents: true,
   enableCounsel: true,
   enableTreeSearch: true,
+  enableExploreMode: false,
   dryRun: false,
 
   // Review gates: maximum strictness
@@ -38,7 +92,6 @@ export const QUALITY_MAX: PresetDefaults = {
   enforceEditorialArtifacts: true,
 
   // Iterations: match SKILL.md multi-pass protocol
-  // SKILL.md: 3-5 persona debate rounds, 12 writeup passes, 2 ideation cycles
   followupMaxIterations: 5,
   personaDebateRounds: 5,
   counselMaxDebateRounds: 5,
@@ -47,6 +100,9 @@ export const QUALITY_MAX: PresetDefaults = {
   maxIdeationCycles: 2,
   preWriteupDebateRounds: 2,
   postReviewDebateRounds: 2,
+
+  // Per-phase pass limits (from SKILL.md table)
+  passLimits: PASS_LIMITS_MAX,
 };
 
 export const QUALITY_FAST: PresetDefaults = {
@@ -60,6 +116,7 @@ export const QUALITY_FAST: PresetDefaults = {
   enableMathAgents: false,
   enableCounsel: false,
   enableTreeSearch: false,
+  enableExploreMode: false,
   dryRun: false,
 
   // Review gates: relaxed
@@ -77,6 +134,9 @@ export const QUALITY_FAST: PresetDefaults = {
   maxIdeationCycles: 1,
   preWriteupDebateRounds: 1,
   postReviewDebateRounds: 1,
+
+  // Per-phase pass limits (relaxed)
+  passLimits: PASS_LIMITS_FAST,
 };
 
 /**

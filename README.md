@@ -33,7 +33,7 @@ That's it. The plugin:
 2. Passes your existing OpenClaw API keys (no separate `.env` needed)
 3. Creates an isolated run workspace with all inputs in `initial_context/`
 4. Prompts you for reference files (papers, datasets) via Telegram/interface
-5. Injects 25 backtested quality prompts + a 647-line author style guide
+5. Injects 29 backtested quality prompts + a 647-line author style guide
 6. Runs the full 22-agent pipeline with quality-maximizing defaults
 7. Streams progress updates to your chat as stages complete
 8. Delivers the finished paper (PDF or markdown) back to you
@@ -94,7 +94,7 @@ That's it. The plugin:
 │   ├── defaults/                     # Configuration defaults
 │   │   ├── quality-presets.ts        # QUALITY_MAX and QUALITY_FAST presets with all
 │   │   │                             #   CLI flag values pre-configured
-│   │   └── stage-names.ts            # 24 pipeline stage constants + human-readable
+│   │   └── stage-names.ts            # 28 pipeline stage constants + human-readable
 │   │                                 #   display names for progress messages
 │   │
 │   └── types/                        # TypeScript type definitions
@@ -116,7 +116,7 @@ That's it. The plugin:
 │   │
 │   ├── state_template.json           # Pipeline state machine template (32 fields)
 │   │
-│   └── prompts/                      # 25 backtested agent prompts
+│   └── prompts/                      # 29 backtested agent prompts (25 core + 4 explore)
 │       ├── 01-persona-practical.md   # Practical Compass persona
 │       ├── 02-persona-rigor.md       # Rigor & Novelty persona
 │       ├── 03-persona-narrative.md   # Narrative Architect persona
@@ -141,7 +141,11 @@ That's it. The plugin:
 │       ├── 22-track-merge.md         # Theory-experiment unified summary
 │       ├── 23-verify-completion.md   # 3-way routing: COMPLETE/INCOMPLETE/RETHINK
 │       ├── 24-followup-lit-review.md # Gap-specific targeted follow-up
-│       └── 25-narrative-voice.md     # Pre-writeup tone/voice guidance
+│       ├── 25-narrative-voice.md     # Pre-writeup tone/voice guidance
+│       ├── 30-math-explorer.md      # Explore mode: iterative math investigation
+│       ├── 31-experiment-explorer.md # Explore mode: iterative experiment investigation
+│       ├── 32-cross-pollinator.md   # Explore mode: theory↔experiment bridge
+│       └── 33-explore-evaluator.md  # Explore mode: convergence check
 │
 ├── scripts/
 │   ├── install-consortium.sh         # Manual installer (normally auto-runs)
@@ -242,6 +246,73 @@ When you run `/pai-msc "hypothesis"`, the plugin orchestrates a 22-agent pipelin
   └─ Cost + duration + review score summary
 ```
 
+### Explore Mode
+
+When launched with `--explore`, the pipeline runs **2-5 exploration cycles** before a **final standard cycle**:
+
+```
+Exploration Cycles (2-5x):
+  Phases 1-6 only (Persona → Track Merge)
+  Uses special explore prompts (30-33) instead of standard agents:
+    - Math Explorer: iterative mathematical investigation
+    - Experiment Explorer: iterative experimental investigation
+    - Cross-Pollinator: bridges theory↔experiment findings
+    - Explore Evaluator: checks convergence across cycles
+
+  Exit rules:
+    Cycle 1: always continue to cycle 2
+    Cycles 2-4: honor evaluator's convergence verdict
+    Cycle 5: force convergence regardless
+
+Final Standard Cycle:
+  Full pipeline (Phases 1-11) using standard prompts
+  Inherits all context from exploration cycles
+```
+
+Explore mode is useful for open-ended research questions where the hypothesis space is large and iterative investigation yields better results than a single pass.
+
+### Per-Phase Pass Limits
+
+Each phase has enforced minimum/maximum passes. Unbounded phases (marked `∞`) run until the agent is satisfied or the budget is hit.
+
+| Phase | Min | Max | Notes |
+|-------|-----|-----|-------|
+| Persona Council | 1 | 1 | Single debate session (3-5 rounds internally) |
+| Literature Review | 2 | 5 | Adversarial novelty check |
+| Brainstorm | 2 | 5 | Divergent → convergent → dependency |
+| Formalize Goals | 2 | 5 | + track decomposition |
+| Research Plan | 2 | 3 | |
+| Math Literature | 2 | ∞ | Unbounded for completeness |
+| Math Proposer | 2 | ∞ | Claim graph construction |
+| Math Prover | 2 | ∞ | With checkpoint/resume |
+| Math Verifier | 2 | ∞ | Adversarial + numerical |
+| Experiment Design | 2 | 5 | |
+| Experimentation | 2 | ∞ | Unbounded for execution |
+| Experiment Verify | 2 | ∞ | Cross-seed stability |
+| Track Merge | 2 | 3 | |
+| Verify Completion | 1 | 1 | 3-way routing gate |
+| Formalize Results | 2 | 5 | |
+| Duality Check | 1 | 1 | Theory-experiment gate |
+| Resource Prep | 2 | 3 | |
+| Writeup | 12 | 12 | Fixed 12-pass (6 draft + 6 review) |
+| Proofreading | 2 | 5 | AI-voice detection |
+| Reviewer | 1 | 1 | Score + hard blockers |
+| Post-Review Council | 1 | 1 | Narrative veto |
+
+The `fast` preset reduces all minimums to 1 and caps maximums lower (e.g., writeup: 3, literature: 3).
+
+### Human Review Cycles
+
+After the pipeline completes a full cycle, you can provide feedback for iterative improvement:
+
+1. The plugin delivers the paper and review summary
+2. You place review notes in a `review_N/` folder in the workspace (or provide inline text)
+3. Run `/pai-msc --resume /path/to/workspace "original hypothesis"` to start a new cycle
+4. The pipeline archives the previous cycle to `cycle_N/` and injects your feedback into the persona council prompts
+5. A full cycle restarts from Phase 1 with your review context
+
+This enables human-in-the-loop refinement while preserving all prior work.
+
 ### Progress Updates
 
 While the pipeline runs, you'll see messages like:
@@ -288,6 +359,7 @@ Start a new research pipeline run.
 | `--math` / `--no-math` | `--math` | Enable/disable theory track |
 | `--counsel` / `--no-counsel` | `--counsel` | Enable/disable multi-model debate |
 | `--tree-search` | on (max-quality) | Enable parallel proof strategies |
+| `--explore` | off | Enable explore mode (2-5 exploration cycles + 1 final paper cycle) |
 | `--style-guide PATH` | bundled | Path to a custom author style guide |
 | `--attach PATH` | — | Attach a reference file (repeatable). Saved to `initial_context/uploads/` |
 | `--no-upload-prompt` | off | Skip the interactive file upload prompt |
@@ -302,6 +374,9 @@ Start a new research pipeline run.
 
 # Quick draft — Sonnet, markdown, no counsel, $25 budget
 /pai-msc --preset fast "quick investigation of learning rate warmup effects"
+
+# Explore mode — 2-5 exploration cycles then 1 final paper cycle
+/pai-msc --explore "Is there a universal scaling law for attention head pruning?"
 
 # Custom model and budget
 /pai-msc --model claude-sonnet-4-6 --budget 50 "effect of dropout on spectral gap"
@@ -428,6 +503,8 @@ Every pipeline run gets its own isolated workspace under `~/.openclaw/poggioai-m
 │   └── skill_prompts/               # Runtime copies
 ├── math_workspace/                  # Theory track outputs
 ├── experiment_workspace/            # Experiment outputs
+├── cycle_0/, cycle_1/, ...          # Archived prior cycles (human review flow)
+├── review_1/, review_2/, ...        # Human review feedback per cycle
 ├── .env                             # API keys for this run
 ├── .llm_config.yaml                 # Config for this run
 ├── budget_state.json                # Cost tracking
@@ -498,7 +575,7 @@ This plugin incorporates improvements developed through extensive backtesting of
 
 | Improvement | What It Does |
 |-------------|-------------|
-| **25 refined prompts** | Each agent prompt iteratively improved through real pipeline runs |
+| **29 refined prompts** | 25 core + 4 explore prompts, synced with the Claude skill source of truth. Each prompt includes timeout recovery, checkpoint/resume, and workspace-aware file handling. |
 | **Adversarial novelty falsification** | Literature review *assumes* claims are known, searches to disprove — not confirm |
 | **AI-voice detection** | 9-category checklist in proofreading (repeated structure, "Furthermore" chains, formulaic hedging, etc.) + hard blocker B4 in review |
 | **Hard blockers B1-B5** | Binary checks: missing research questions (B1), unsupported takeaways (B2), placeholders (B3), AI-sounding language (B4), untraced theory claims (B5). Any blocker → score capped at 4/10 |
@@ -510,6 +587,9 @@ This plugin incorporates improvements developed through extensive backtesting of
 | **Post-review council** | 2 debate rounds after validation. Narrative Architect has 1 veto. |
 | **Multi-pass execution** | Every phase runs 2+ passes minimum. Resume logic detects incomplete artifacts and refines. |
 | **Tree search** | Parallel proof strategies for theory track (enabled by default in max-quality) |
+| **Explore mode** | 2-5 exploration cycles with specialized prompts (math explorer, experiment explorer, cross-pollinator, evaluator) before a final standard cycle. For open-ended research questions. |
+| **Per-phase pass limits** | 21 phases with enforced min/max passes. Theory/experiment phases are unbounded; gates are single-pass; writeup is fixed at 12. |
+| **Human review cycles** | Iterative refinement: deliver paper → receive feedback in `review_N/` → archive to `cycle_N/` → restart with review context |
 | **Per-run workspace isolation** | `.env`, config, logs all scoped to run directory. No concurrent run interference. |
 | **initial_context/ archival** | All inputs (task, prompts, style guide, uploads) preserved for reproducibility |
 
@@ -533,7 +613,9 @@ Plugin configuration is set in your OpenClaw config file (`~/.openclaw/openclaw.
         "defaultBudgetUsd": 300,
         "progressPollIntervalMs": 15000,
         "steeringBasePort": 5001,
-        "uploadTimeoutMs": 60000
+        "uploadTimeoutMs": 60000,
+        "agentTimeoutMs": 2700000,
+        "enableExploreMode": false
       }
     }
   }
@@ -551,6 +633,8 @@ Plugin configuration is set in your OpenClaw config file (`~/.openclaw/openclaw.
 | `progressPollIntervalMs` | `15000` | How often to poll for progress (ms). |
 | `steeringBasePort` | `5001` | Base port for the callback server. |
 | `uploadTimeoutMs` | `60000` | Timeout for the file upload prompt in ms. Set to 0 to skip. |
+| `agentTimeoutMs` | `2700000` | Agent timeout in ms (45 min). High value needed for multi-pass phases like 12-pass writeup. |
+| `enableExploreMode` | `false` | Enable explore mode by default. Can also be enabled per-run with `--explore`. |
 
 ### API Keys
 

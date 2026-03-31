@@ -84,6 +84,7 @@ function buildCliArgs(
   if (options.requirePdf) args.push('--require-pdf');
   if (options.enforcePaperArtifacts) args.push('--enforce-paper-artifacts');
   if (options.enforceEditorialArtifacts) args.push('--enforce-editorial-artifacts');
+  if (options.enableExploreMode) args.push('--explore');
   if (options.dryRun) args.push('--dry-run');
 
   return args;
@@ -116,6 +117,9 @@ export function spawnPipeline(
 
   // Build per-run subprocess environment
   const subprocessEnv = buildSubprocessEnv(workspace.runDir, workspace.uploadsDir);
+
+  // Pass agent timeout to consortium backend (2700s = 45 min per phase pass)
+  subprocessEnv['OPENCLAW_AGENT_TIMEOUT'] = String(Math.round(config.agentTimeoutMs / 1000));
 
   const child: ChildProcess = spawn(fullCmd[0], fullCmd.slice(1), {
     cwd: consortiumDir,

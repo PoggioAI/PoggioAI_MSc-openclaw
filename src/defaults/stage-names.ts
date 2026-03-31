@@ -32,9 +32,17 @@ export const PIPELINE_STAGES = [
   'verify_completion',
   'formalize_results_agent',
   'resource_preparation_agent',
+  'pre_writeup_council',
+  'narrative_voice',
   'writeup_agent',
   'proofreading_agent',
   'reviewer_agent',
+  'persona_post_review',
+  // Explore mode stages
+  'math_explorer',
+  'experiment_explorer',
+  'cross_pollinator',
+  'explore_evaluator',
 ] as const;
 
 export type StageName = (typeof PIPELINE_STAGES)[number];
@@ -65,6 +73,14 @@ export const STAGE_DISPLAY: Record<string, string> = {
   writeup_agent: 'Writing Paper (12-pass cycle)',
   proofreading_agent: 'Proofreading & AI-Voice Check',
   reviewer_agent: 'Adversarial Peer Review',
+  pre_writeup_council: 'Pre-Writeup Council (2 advisory rounds)',
+  narrative_voice: 'Narrative Voice Brief',
+  persona_post_review: 'Post-Review Persona Council',
+  // Explore mode stages
+  math_explorer: 'Math Explorer (iterative investigation)',
+  experiment_explorer: 'Experiment Explorer (iterative investigation)',
+  cross_pollinator: 'Cross-Pollinator (theory-experiment bridge)',
+  explore_evaluator: 'Explore Evaluator (convergence check)',
 };
 
 /** Gate/routing node names (not full agent stages, but important for detection). */
