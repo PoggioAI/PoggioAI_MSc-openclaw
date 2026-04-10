@@ -691,6 +691,24 @@ bash scripts/check-prereqs.sh
 
 ## Installation
 
+### One-Command Setup (recommended)
+
+```bash
+git clone https://github.com/PoggioAI/PoggioAI_MSc-openclaw.git
+cd PoggioAI_MSc-openclaw
+bash scripts/setup.sh
+```
+
+This handles everything:
+- Installs Python 3.11+ if missing (auto-detects OS: Amazon Linux, Ubuntu, macOS)
+- Builds the TypeScript plugin (`npm install && npm run build`)
+- Symlinks into `~/.openclaw/plugins/`
+- Registers the plugin in `~/.openclaw/openclaw.json`
+- Sets the agent timeout to 2700s (45 min) for multi-pass phases
+- Attempts to restart OpenClaw
+
+After setup, restart OpenClaw if the script couldn't do it automatically, then use `/pai-msc "your hypothesis"`.
+
 ### From OpenClaw (when published)
 
 ```bash
@@ -699,16 +717,30 @@ openclaw plugins install pai-msc-openclaw
 
 ### Manual Installation
 
+If you prefer to do it yourself:
+
 ```bash
 git clone https://github.com/PoggioAI/PoggioAI_MSc-openclaw.git
 cd PoggioAI_MSc-openclaw
 npm install
 npm run build
+mkdir -p ~/.openclaw/plugins
+ln -sf "$(pwd)" ~/.openclaw/plugins/pai-msc-openclaw
 ```
 
-Then either:
-- Copy/symlink the directory to `~/.openclaw/plugins/pai-msc-openclaw`
-- Or add the path to your OpenClaw config: `plugins.load.paths: ["/path/to/plugin"]`
+Then add the plugin to `~/.openclaw/openclaw.json` under `plugins.entries`:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "pai-msc-openclaw": {
+        "enabled": true
+      }
+    }
+  }
+}
+```
 
 Restart the OpenClaw gateway to load the plugin.
 
@@ -718,12 +750,6 @@ The plugin auto-installs the pAI/MSc backend on first `/pai-msc` use. To pre-ins
 
 ```bash
 bash scripts/install-consortium.sh
-```
-
-Or with a custom path and env name:
-
-```bash
-bash scripts/install-consortium.sh /path/to/install my-env-name
 ```
 
 ---
