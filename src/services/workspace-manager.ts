@@ -32,6 +32,8 @@ export interface RunWorkspace {
   promptsDir: string;
   /** initial_context/uploads/ — user-uploaded reference files. */
   uploadsDir: string;
+  /** initial_context/docs/ — orchestration docs (routing, protocols, context injection templates). */
+  docsDir: string;
   /** logs/ — stdout.log and stderr.log. */
   logsDir: string;
 }
@@ -58,12 +60,14 @@ export function createRunWorkspace(runId: string): RunWorkspace {
     initialContextDir: path.join(runDir, 'initial_context'),
     promptsDir: path.join(runDir, 'initial_context', 'prompts'),
     uploadsDir: path.join(runDir, 'initial_context', 'uploads'),
+    docsDir: path.join(runDir, 'initial_context', 'docs'),
     logsDir: path.join(runDir, 'logs'),
   };
 
   // Create all directories
   mkdirSync(workspace.promptsDir, { recursive: true });
   mkdirSync(workspace.uploadsDir, { recursive: true });
+  mkdirSync(workspace.docsDir, { recursive: true });
   mkdirSync(workspace.logsDir, { recursive: true });
 
   // Also create paper_workspace/ so the consortium finds it
@@ -81,6 +85,28 @@ export function writeTaskFile(workspace: RunWorkspace, task: string): void {
     task,
     'utf-8',
   );
+}
+
+/**
+ * Write vision.md — the immutable reference for the researcher's original intent.
+ *
+ * Created once at run start. The orchestrator and all personas read this
+ * BEFORE evaluating proposals. It is never overwritten; additional directives
+ * are appended.
+ */
+export function writeVisionFile(
+  workspace: RunWorkspace,
+  task: string,
+  directives?: string,
+): void {
+  const visionPath = path.join(workspace.runDir, 'vision.md');
+  if (existsSync(visionPath)) return; // Never overwrite
+
+  let content = `# Research Vision\n\n${task}\n`;
+  if (directives) {
+    content += `\n## Directives\n\n${directives}\n`;
+  }
+  writeFileSync(visionPath, content, 'utf-8');
 }
 
 /**

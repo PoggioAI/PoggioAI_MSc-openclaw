@@ -14,6 +14,8 @@
   "verify_completion_history": [],
   "recommended_track": null,
   "ideation_cycle": 0,
+  "narrative_veto_count": 0,
+  "vision_locked": true,
   "finished": false,
   "mode": "default",
   "explore_cycle": 0,

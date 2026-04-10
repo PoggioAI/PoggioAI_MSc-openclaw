@@ -120,6 +120,21 @@ export function getNarrativeVoicePrompt(): string {
 // ─── initial_context/ Injection (new workspace-first flow) ───────────
 
 /**
+ * All orchestration doc filenames to copy.
+ * These contain context injection templates, routing rules, and protocols
+ * that agents can reference from the workspace.
+ */
+const DOC_FILES = [
+  'persona-council.md',
+  'execution-protocol.md',
+  'explore-mode.md',
+  'pre-writeup-council.md',
+  'persona-post-review.md',
+  'review-cycle.md',
+  'token-logging.md',
+];
+
+/**
  * All prompt filenames to copy.
  */
 const PROMPT_FILES = [
@@ -205,7 +220,22 @@ export function injectToInitialContext(
     }
   }
 
-  // 3. State template → {runDir}/state.json
+  // 3. All 7 orchestration docs → initial_context/docs/ + paper_workspace/skill_docs/
+  const docsSrc = path.join(assetsDir, 'docs');
+  const skillDocsDest = path.join(workspace.runDir, 'paper_workspace', 'skill_docs');
+  mkdirSync(skillDocsDest, { recursive: true });
+
+  for (const file of DOC_FILES) {
+    const src = path.join(docsSrc, file);
+    if (existsSync(src)) {
+      // Archive copy in initial_context/docs/
+      copyFileSync(src, path.join(workspace.docsDir, file));
+      // Runtime copy in paper_workspace/skill_docs/
+      copyFileSync(src, path.join(skillDocsDest, file));
+    }
+  }
+
+  // 4. State template → {runDir}/state.json
   const stateSrc = path.join(assetsDir, 'state_template.json');
   const stateDest = path.join(workspace.runDir, 'state.json');
   if (existsSync(stateSrc) && !existsSync(stateDest)) {

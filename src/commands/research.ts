@@ -32,7 +32,7 @@ import { isInstalled, checkPrereqs, checkOptionalDeps, install } from '../servic
 import { writeEnvFile, canUseCounsel } from '../bridge/env-passthrough.js';
 import { writeConfig } from '../bridge/config-writer.js';
 import { injectToInitialContext } from '../services/quality-injector.js';
-import { createRunWorkspace, writeTaskFile, writePipelineOptions } from '../services/workspace-manager.js';
+import { createRunWorkspace, writeTaskFile, writePipelineOptions, writeVisionFile } from '../services/workspace-manager.js';
 import { promptForUploads } from '../services/upload-handler.js';
 import { spawnPipeline } from '../services/process-manager.js';
 
@@ -255,8 +255,9 @@ export function registerResearchCommand(api: any): void {
         typedApi.sendMessage(`*Warning: quality injection failed:* ${err.message}`);
       }
 
-      // ── Step 8: Write task and options snapshots ────────────────────
+      // ── Step 8: Write task, vision, and options snapshots ─────────────
       writeTaskFile(workspace, options.task);
+      writeVisionFile(workspace, options.task);
       writePipelineOptions(workspace, options);
 
       // ── Step 9: Prompt for file uploads ────────────────────────────

@@ -67,8 +67,9 @@ That's it. The plugin:
 │   │
 │   ├── services/                     # Core services
 │   │   ├── workspace-manager.ts      # Creates per-run workspace with initial_context/,
-│   │   │                             #   logs/, uploads/ directories. All run data is
-│   │   │                             #   isolated under ~/.openclaw/poggioai-msc/runs/
+│   │   │                             #   logs/, uploads/, docs/ dirs + vision.md.
+│   │   │                             #   All run data isolated under
+│   │   │                             #   ~/.openclaw/poggioai-msc/runs/
 │   │   ├── upload-handler.ts         # Prompts user for reference files via Telegram/
 │   │   │                             #   interface with 3-strategy fallback. Saves to
 │   │   │                             #   initial_context/uploads/
@@ -114,7 +115,16 @@ That's it. The plugin:
 │   │                                 # epistemic lints, deletion pass, self-audit checklist,
 │   │                                 # case studies with diagnosis + fix
 │   │
-│   ├── state_template.json           # Pipeline state machine template (32 fields)
+│   ├── state_template.json           # Pipeline state machine template
+│   │
+│   ├── docs/                         # 7 orchestration docs (from Claude skill)
+│   │   ├── persona-council.md        # Vision seeding, debate escalation templates
+│   │   ├── execution-protocol.md     # Multi-pass resume, validation checklists
+│   │   ├── explore-mode.md           # Explore cycle escalation, convergence rules
+│   │   ├── pre-writeup-council.md    # Phase 7b context injection
+│   │   ├── persona-post-review.md    # Phase 11 veto rules, concern archival
+│   │   ├── review-cycle.md           # Human review cycle handling
+│   │   └── token-logging.md          # Per-phase token logging script
 │   │
 │   └── prompts/                      # 29 backtested agent prompts (25 core + 4 explore)
 │       ├── 01-persona-practical.md   # Practical Compass persona
@@ -491,16 +501,19 @@ Every pipeline run gets its own isolated workspace under `~/.openclaw/poggioai-m
 │   ├── author_style_guide.md        # Style guide used
 │   ├── state_template.json          # Initial state machine
 │   ├── uploads/                     # Your reference files
+│   └── docs/                        # 7 orchestration docs (routing, protocols)
 │   │   ├── related-work.pdf
 │   │   └── dataset.csv
 │   └── prompts/                     # 25 backtested prompts (archived)
 │       ├── 01-persona-practical.md
 │       └── ... (25 files)
+├── vision.md                        # Immutable research vision (READ-ONLY after creation)
 ├── paper_workspace/                 # Pipeline outputs
 │   ├── final_paper.pdf
 │   ├── review_verdict.json
 │   ├── author_style_guide.md        # Runtime copy
-│   └── skill_prompts/               # Runtime copies
+│   ├── skill_prompts/               # Runtime prompt copies
+│   └── skill_docs/                  # Runtime orchestration doc copies
 ├── math_workspace/                  # Theory track outputs
 ├── experiment_workspace/            # Experiment outputs
 ├── cycle_0/, cycle_1/, ...          # Archived prior cycles (human review flow)
@@ -575,7 +588,9 @@ This plugin incorporates improvements developed through extensive backtesting of
 
 | Improvement | What It Does |
 |-------------|-------------|
-| **29 refined prompts** | 25 core + 4 explore prompts, synced with the Claude skill source of truth. Each prompt includes timeout recovery, checkpoint/resume, and workspace-aware file handling. |
+| **29 refined prompts** | 25 core + 4 explore prompts, synced with the Claude skill source of truth. Persona prompts include paper-shaping authority, validation scope labeling, narrative preservation rules, vision alignment, and anti-retreat logic. |
+| **Vision lock** | `vision.md` created at run start captures the researcher's original intent. Immutable after creation — all personas read it before evaluating to prevent scope drift. |
+| **7 orchestration docs** | Context injection templates, routing rules, multi-pass resume protocol, validation checklists, and human review cycle handling — copied from Claude skill source of truth. |
 | **Adversarial novelty falsification** | Literature review *assumes* claims are known, searches to disprove — not confirm |
 | **AI-voice detection** | 9-category checklist in proofreading (repeated structure, "Furthermore" chains, formulaic hedging, etc.) + hard blocker B4 in review |
 | **Hard blockers B1-B5** | Binary checks: missing research questions (B1), unsupported takeaways (B2), placeholders (B3), AI-sounding language (B4), untraced theory claims (B5). Any blocker → score capped at 4/10 |
