@@ -212,8 +212,15 @@ step "Restarting OpenClaw"
 
 RESTARTED=false
 
-# Try systemctl
-if systemctl is-active --quiet openclaw 2>/dev/null; then
+# Try user-level systemd (most common: openclaw installed via curl | bash)
+if systemctl --user is-active --quiet openclaw-gateway 2>/dev/null; then
+  systemctl --user restart openclaw-gateway
+  RESTARTED=true
+  log "Restarted via 'systemctl --user restart openclaw-gateway'"
+fi
+
+# Try system-level systemd
+if ! $RESTARTED && systemctl is-active --quiet openclaw 2>/dev/null; then
   sudo systemctl restart openclaw
   RESTARTED=true
   log "Restarted via systemctl"
@@ -228,21 +235,9 @@ if ! $RESTARTED && command -v pm2 &>/dev/null; then
   fi
 fi
 
-# Try openclaw CLI
-if ! $RESTARTED && command -v openclaw &>/dev/null; then
-  # Try known subcommands for restarting
-  if openclaw restart &>/dev/null; then
-    RESTARTED=true
-    log "Restarted via 'openclaw restart'"
-  elif openclaw gateway restart &>/dev/null; then
-    RESTARTED=true
-    log "Restarted via 'openclaw gateway restart'"
-  fi
-fi
-
 if ! $RESTARTED; then
   warn "Could not auto-restart OpenClaw."
-  echo "       Please restart it manually to load the plugin."
+  echo "       Try: systemctl --user restart openclaw-gateway"
   echo "       The plugin will be available after restart."
 fi
 
